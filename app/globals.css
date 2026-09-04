@@ -1,0 +1,380 @@
+/* ============ GRAND LINE — One Piece fan page ============ */
+:root {
+  --gold: #f5c542;
+  --gold-soft: #ffd968;
+  --amber: #e07b39;
+  --red: #d0342c;
+  --ink: #040b16;
+  --ink2: #071426;
+  --panel: rgba(14, 34, 60, 0.88);
+  --panel2: rgba(8, 20, 38, 0.94);
+  --line: rgba(120, 170, 230, 0.22);
+  --txt: #e8e6e0;
+  --txt-dim: #c3d4e8;
+  --blue: #9fc6ef;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: "Crimson Text", serif;
+  color: var(--txt);
+  background: var(--ink);
+  overflow-x: hidden;
+}
+
+/* fondo aurora animado */
+.aurora {
+  position: fixed; inset: 0; z-index: -2; pointer-events: none;
+  background:
+    radial-gradient(ellipse at 15% -5%, rgba(30, 90, 160, 0.4) 0%, transparent 55%),
+    radial-gradient(ellipse at 88% 12%, rgba(130, 45, 150, 0.22) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 115%, rgba(12, 70, 130, 0.5) 0%, transparent 62%),
+    linear-gradient(180deg, #050d1a 0%, #071426 45%, #04101f 100%);
+  animation: auroraShift 18s ease-in-out infinite alternate;
+}
+@keyframes auroraShift {
+  0%   { filter: hue-rotate(0deg) brightness(1); }
+  100% { filter: hue-rotate(18deg) brightness(1.12); }
+}
+.particles { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
+
+/* ---------- animaciones base ---------- */
+@keyframes floaty     { 0%,100% { transform: translateY(0) rotate(-4deg); } 50% { transform: translateY(-18px) rotate(4deg); } }
+@keyframes shimmer    { 0% { background-position: -500px 0; } 100% { background-position: 500px 0; } }
+@keyframes glowPulse  { 0%,100% { filter: drop-shadow(0 0 16px rgba(245,197,66,.5)); } 50% { filter: drop-shadow(0 0 38px rgba(245,197,66,.95)); } }
+@keyframes titleFlow  { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+@keyframes sparkle    { 0%,100% { opacity: .2; transform: scale(.8); } 50% { opacity: 1; transform: scale(1.15); } }
+@keyframes sail       { 0% { transform: translateX(-8vw); } 100% { transform: translateX(108vw); } }
+@keyframes bobShip    { 0%,100% { rotate: -3deg; translate: 0 0; } 50% { rotate: 3deg; translate: 0 -8px; } }
+@keyframes waveMove   { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+@keyframes bounceDown { 0%,100% { transform: translateY(0); opacity:.9; } 50% { transform: translateY(10px); opacity:.4; } }
+@keyframes flowY      { 0% { background-position: 0 0; } 100% { background-position: 0 300%; } }
+@keyframes spinSlow   { to { transform: rotate(360deg); } }
+
+/* ---------- barra de progreso + nav ---------- */
+.progress {
+  position: fixed; top: 0; left: 0; height: 4px; z-index: 60; width: 0%;
+  background: linear-gradient(90deg, var(--gold), var(--amber), var(--gold));
+  box-shadow: 0 0 14px rgba(245, 197, 66, 0.8);
+}
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.7rem 2rem;
+  background: rgba(5, 13, 26, 0.55);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(245, 197, 66, 0.18);
+  transition: background 0.3s ease;
+}
+.nav.scrolled { background: rgba(5, 13, 26, 0.88); }
+.nav-brand {
+  font-family: "Pirata One", cursive; font-size: 1.5rem; color: var(--gold);
+  display: flex; align-items: center; gap: 0.5rem; text-decoration: none;
+  filter: drop-shadow(0 0 10px rgba(245, 197, 66, 0.4));
+}
+.nav-links { display: flex; gap: 1.3rem; list-style: none; }
+.nav-links a {
+  font-family: "Cinzel", serif; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.18em;
+  color: var(--blue); text-decoration: none; text-transform: uppercase;
+  position: relative; padding: 0.3rem 0; transition: color 0.25s ease;
+}
+.nav-links a::after {
+  content: ""; position: absolute; left: 0; bottom: 0; width: 0; height: 2px;
+  background: linear-gradient(90deg, var(--gold), var(--amber));
+  transition: width 0.3s ease; border-radius: 2px;
+}
+.nav-links a:hover { color: var(--gold-soft); }
+.nav-links a:hover::after { width: 100%; }
+
+/* ---------- héroe ---------- */
+.hero {
+  position: relative; min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; overflow: hidden; padding: 5.5rem 1rem 7rem;
+}
+.hero-stars span { position: absolute; color: #fdf3c8; font-size: 0.8rem; animation: sparkle 3.2s ease-in-out infinite; }
+.hero-hat { animation: floaty 4.5s ease-in-out infinite; filter: drop-shadow(0 16px 26px rgba(0, 0, 0, 0.65)); margin-bottom: 0.6rem; will-change: transform; }
+.hero-title {
+  font-family: "Pirata One", cursive; font-weight: 400;
+  font-size: clamp(4rem, 11vw, 8.5rem); line-height: 1; letter-spacing: 0.05em;
+  background: linear-gradient(90deg, #f5c542, #fff3c4, #e07b39, #f5c542);
+  background-size: 200% auto;
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  animation: titleFlow 5s linear infinite, glowPulse 4s ease-in-out infinite;
+}
+.hero-sub {
+  font-family: "Cinzel", serif; font-weight: 700; letter-spacing: 0.45em;
+  color: var(--blue); font-size: clamp(0.75rem, 2vw, 1.05rem);
+  text-transform: uppercase; margin-top: 0.9rem;
+}
+.hero-quote {
+  max-width: 680px; margin: 1.6rem auto 0; font-style: italic;
+  color: #d7e6f7; font-size: 1.18rem; line-height: 1.6; opacity: 0.92;
+}
+.hero-quote b { color: var(--gold); font-style: normal; }
+.hero-pills { margin-top: 1.6rem; display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; }
+.pill {
+  font-family: "Cinzel", serif; font-size: 0.64rem; font-weight: 700; letter-spacing: 0.18em;
+  padding: 0.35rem 0.9rem; border-radius: 30px; text-transform: uppercase;
+  border: 1px solid rgba(245, 197, 66, 0.5); color: var(--gold-soft);
+  background: rgba(245, 197, 66, 0.08); backdrop-filter: blur(6px);
+  transition: all 0.25s ease;
+}
+.pill:hover { background: rgba(245, 197, 66, 0.22); transform: translateY(-3px); box-shadow: 0 8px 20px rgba(245,197,66,.25); }
+.hero-ship {
+  position: absolute; bottom: 120px; left: 0; font-size: 3rem; z-index: 2;
+  animation: sail 30s linear infinite; filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.55));
+}
+.hero-ship > span { display: inline-block; animation: bobShip 3.5s ease-in-out infinite; }
+.hero-scroll {
+  position: absolute; bottom: 26px; left: 50%; translate: -50% 0; z-index: 3;
+  font-size: 1.6rem; color: var(--gold); animation: bounceDown 1.8s ease-in-out infinite;
+}
+.waves { position: absolute; bottom: -2px; left: 0; width: 100%; height: 130px; overflow: hidden; z-index: 1; }
+.waves svg { position: absolute; bottom: 0; left: 0; width: 200%; height: 100%; animation: waveMove 12s linear infinite; }
+.waves.back svg { animation-duration: 21s; opacity: 0.5; height: 115%; }
+
+/* ---------- secciones ---------- */
+section.block { max-width: 1180px; margin: 0 auto; padding: 5rem 1.4rem 2rem; }
+.divider { display: flex; align-items: center; gap: 1.2rem; margin-bottom: 0.6rem; }
+.divider::before, .divider::after {
+  content: ""; flex: 1; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(245, 197, 66, 0.55), transparent);
+}
+.dtitle {
+  font-family: "Pirata One", cursive; font-weight: 400; font-size: clamp(2rem, 5vw, 3rem);
+  color: var(--gold); letter-spacing: 0.04em; white-space: nowrap; text-align: center;
+  filter: drop-shadow(0 0 14px rgba(245, 197, 66, 0.35));
+}
+.dsub {
+  display: block; text-align: center; font-family: "Cinzel", serif;
+  font-size: 0.68rem; letter-spacing: 0.35em; color: var(--blue);
+  text-transform: uppercase; margin-bottom: 2.2rem;
+}
+.intro { text-align: center; color: #a9c2dd; font-style: italic; margin-bottom: 2rem; font-size: 1.05rem; }
+
+/* ---------- reveal on scroll ---------- */
+.reveal { opacity: 0; transform: translateY(38px); transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.2, 0.7, 0.3, 1); }
+.reveal.in { opacity: 1; transform: translateY(0); }
+
+/* ---------- carteles WANTED (tilt 3D) ---------- */
+.crew-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.1rem; }
+.wanted {
+  --mx: 50%; --my: 50%;
+  position: relative; border-radius: 8px; text-align: center; color: #3a2409;
+  padding: 1.15rem 0.85rem 1.05rem; cursor: default;
+  background: radial-gradient(ellipse at 50% 8%, rgba(255, 250, 225, 0.92) 0%, rgba(240, 222, 178, 0.95) 55%, rgba(212, 183, 128, 0.97) 100%);
+  border: 3px double #6b4b1e; outline: 2px solid rgba(80, 55, 20, 0.5); outline-offset: -9px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5), inset 0 0 46px rgba(120, 85, 35, 0.28);
+  transition: transform 0.18s ease-out, box-shadow 0.3s ease;
+  transform-style: preserve-3d; will-change: transform;
+}
+.wanted::after {
+  content: ""; position: absolute; inset: 0; border-radius: 8px; pointer-events: none;
+  background: radial-gradient(circle at var(--mx) var(--my), rgba(255, 255, 255, 0.35) 0%, transparent 55%);
+  opacity: 0; transition: opacity 0.3s ease;
+}
+.wanted:hover::after { opacity: 1; }
+.wanted:hover { box-shadow: 0 30px 60px rgba(0, 0, 0, 0.65), 0 0 38px rgba(245, 197, 66, 0.35), inset 0 0 46px rgba(120, 85, 35, 0.28); }
+.wtop { font-family: "Cinzel", serif; font-weight: 900; font-size: 1.5rem; letter-spacing: 0.16em; border-bottom: 2px solid rgba(80, 55, 20, 0.55); padding-bottom: 0.15rem; }
+.wface { font-size: 3.4rem; line-height: 1; margin: 0.5rem 0 0.25rem; display: flex; justify-content: center; align-items: center; min-height: 64px; transform: translateZ(30px); }
+.wdead { font-family: "Cinzel", serif; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.3em; opacity: 0.85; }
+.wname { font-family: "Pirata One", cursive; font-weight: 400; font-size: 1.45rem; color: #4a2c08; line-height: 1.05; margin-top: 0.15rem; }
+.wrole { font-size: 0.85rem; font-style: italic; opacity: 0.85; min-height: 2.1em; line-height: 1.2; }
+.wbounty { font-family: "Cinzel", serif; font-weight: 900; font-size: 1rem; margin-top: 0.35rem; color: #5a3408; }
+.wbounty small { display: block; font-size: 0.56rem; letter-spacing: 0.28em; font-weight: 700; opacity: 0.75; }
+.wfruit {
+  margin-top: 0.45rem; font-size: 0.76rem; display: inline-block; padding: 0.14rem 0.6rem;
+  background: rgba(90, 60, 20, 0.14); border: 1px solid rgba(90, 60, 20, 0.3); border-radius: 20px;
+}
+
+/* ---------- flip cards (frutas) ---------- */
+.fruit-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.3rem; }
+.flip { perspective: 1100px; min-height: 320px; }
+.flip-inner { position: relative; width: 100%; height: 100%; min-height: 320px; transform-style: preserve-3d; transition: transform 0.75s cubic-bezier(0.3, 0.8, 0.3, 1); }
+.flip:hover .flip-inner { transform: rotateY(180deg); }
+.flip-face {
+  position: absolute; inset: 0; border-radius: 18px; padding: 1.6rem 1.4rem;
+  backface-visibility: hidden; -webkit-backface-visibility: hidden;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+  background: linear-gradient(160deg, var(--panel) 0%, var(--panel2) 100%);
+  border: 1px solid var(--line); box-shadow: 0 14px 32px rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+}
+.flip-face.front::before {
+  content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+  background: linear-gradient(90deg, var(--gold), var(--amber), var(--gold));
+  background-size: 200% 100%; animation: shimmer 4s linear infinite;
+}
+.flip-face.back { transform: rotateY(180deg); border-color: rgba(245, 197, 66, 0.55); background: linear-gradient(160deg, rgba(38, 28, 8, 0.95), rgba(20, 14, 4, 0.97)); }
+.flip-emoji { font-size: 3.4rem; margin-bottom: 0.5rem; animation: floaty 4s ease-in-out infinite; }
+.ftype { font-family: "Cinzel", serif; font-size: 0.62rem; letter-spacing: 0.32em; color: var(--blue); text-transform: uppercase; }
+.fname { font-family: "Pirata One", cursive; font-weight: 400; font-size: 1.9rem; color: var(--gold); margin: 0.3rem 0 0.4rem; }
+.flip-face p { color: var(--txt-dim); font-size: 0.98rem; line-height: 1.55; }
+.fhint { margin-top: 0.9rem; font-size: 0.72rem; color: rgba(159, 198, 239, 0.65); letter-spacing: 0.12em; font-family: "Cinzel", serif; }
+.flip-face.back .fname { color: var(--gold-soft); }
+.flip-face.back p b { color: var(--gold-soft); }
+
+/* ---------- panel genérico ---------- */
+.panel {
+  background: linear-gradient(160deg, var(--panel) 0%, var(--panel2) 100%);
+  border: 1px solid var(--line); border-radius: 18px;
+  padding: 1.5rem 1.5rem 1.35rem; box-shadow: 0 14px 32px rgba(0, 0, 0, 0.45);
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.panel:hover { border-color: rgba(245, 197, 66, 0.55); box-shadow: 0 22px 46px rgba(0, 0, 0, 0.6), 0 0 26px rgba(245, 197, 66, 0.16); }
+.panel h4 { font-family: "Pirata One", cursive; font-weight: 400; font-size: 1.55rem; color: var(--gold); margin: 0.3rem 0 0.3rem; }
+.panel p { color: var(--txt-dim); font-size: 0.98rem; line-height: 1.55; }
+
+/* ---------- sagas timeline ---------- */
+.sagas-wrap { display: grid; grid-template-columns: 3fr 2fr; gap: 2.2rem; align-items: start; }
+.timeline { position: relative; padding-left: 2rem; }
+.timeline::before {
+  content: ""; position: absolute; left: 9px; top: 8px; bottom: 8px; width: 3px; border-radius: 3px;
+  background: linear-gradient(180deg, var(--gold) 0%, var(--amber) 50%, #3aa0d8 100%);
+  box-shadow: 0 0 14px rgba(245, 197, 66, 0.5);
+}
+.tl-item { position: relative; padding-bottom: 1.6rem; }
+.tl-item::before {
+  content: ""; position: absolute; left: -1.72rem; top: 0.42rem; width: 13px; height: 13px; border-radius: 50%;
+  background: var(--gold); border: 3px solid var(--ink2); box-shadow: 0 0 12px rgba(245, 197, 66, 0.8);
+}
+.tl-item h5 { font-family: "Pirata One", cursive; font-weight: 400; font-size: 1.4rem; color: var(--gold-soft); }
+.tlmeta { font-family: "Cinzel", serif; font-size: 0.6rem; letter-spacing: 0.26em; color: #7fa8d4; text-transform: uppercase; }
+.tl-item p { color: var(--txt-dim); margin-top: 0.25rem; font-size: 0.97rem; line-height: 1.5; }
+.side-stack { display: flex; flex-direction: column; gap: 1.1rem; position: sticky; top: 90px; }
+.side-stack .panel { text-align: center; }
+.logpose { display: inline-block; animation: spinSlow 14s linear infinite; font-size: 2.1rem; }
+.bignum { font-family: "Pirata One", cursive; font-size: 1.7rem; color: var(--gold-soft); }
+
+/* ---------- anime: carrusel horizontal ---------- */
+.anime-stats { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2.2rem; }
+.astat {
+  flex: 1; min-width: 150px; max-width: 230px; text-align: center;
+  padding: 1.1rem 0.8rem 1rem; border-radius: 16px; position: relative; overflow: hidden;
+  background: linear-gradient(160deg, rgba(22, 48, 84, 0.92), rgba(10, 25, 48, 0.96));
+  border: 1px solid rgba(245, 197, 66, 0.35); box-shadow: 0 10px 26px rgba(0, 0, 0, 0.45);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.astat::before {
+  content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 3px;
+  background: linear-gradient(90deg, var(--gold), var(--amber), var(--gold));
+  background-size: 200% 100%; animation: shimmer 4s linear infinite;
+}
+.astat:hover { transform: translateY(-7px) scale(1.05); box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6), 0 0 26px rgba(245, 197, 66, 0.3); }
+.astat .semoji { font-size: 1.5rem; display: block; margin-bottom: 0.2rem; }
+.astat .snum { font-family: "Pirata One", cursive; font-size: 2.3rem; color: var(--gold); line-height: 1.05; filter: drop-shadow(0 0 12px rgba(245, 197, 66, 0.5)); }
+.astat .slab { font-family: "Cinzel", serif; font-size: 0.58rem; letter-spacing: 0.22em; color: var(--blue); margin-top: 0.4rem; text-transform: uppercase; }
+
+.rail-hint { text-align: center; font-family: "Cinzel", serif; font-size: 0.62rem; letter-spacing: 0.3em; color: rgba(159, 198, 239, 0.7); text-transform: uppercase; margin-bottom: 0.9rem; }
+.anime-rail {
+  display: flex; gap: 1.1rem; overflow-x: auto; padding: 0.6rem 0.2rem 1.4rem;
+  scroll-snap-type: x mandatory; cursor: grab;
+}
+.anime-rail:active { cursor: grabbing; }
+.anime-rail::-webkit-scrollbar { height: 8px; }
+.anime-rail::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.06); border-radius: 8px; }
+.anime-rail::-webkit-scrollbar-thumb { background: linear-gradient(90deg, var(--gold), var(--amber)); border-radius: 8px; }
+.acard {
+  scroll-snap-align: center; flex: 0 0 300px; position: relative;
+  border-radius: 18px; padding: 1.5rem 1.3rem 1.3rem; overflow: hidden;
+  background: linear-gradient(160deg, var(--panel), var(--panel2));
+  border: 1px solid var(--line); box-shadow: 0 14px 32px rgba(0, 0, 0, 0.45);
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+.acard:hover { transform: translateY(-8px); border-color: rgba(245, 197, 66, 0.6); }
+.acard .ayear {
+  position: absolute; right: 0.6rem; top: 0.1rem;
+  font-family: "Pirata One", cursive; font-size: 4.4rem; color: rgba(245, 197, 66, 0.09);
+  pointer-events: none; line-height: 1;
+}
+.acard .abadge {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 58px; height: 58px; border-radius: 50%; font-size: 1.6rem;
+  background: radial-gradient(circle at 35% 30%, #ffe9a8, var(--gold) 55%, #c98f1e);
+  border: 3px solid #8a5a12; box-shadow: 0 0 22px rgba(245, 197, 66, 0.6);
+  margin-bottom: 0.7rem;
+}
+.acard .ayearlab { font-family: "Cinzel", serif; font-size: 0.62rem; letter-spacing: 0.3em; color: var(--blue); }
+.acard h6 { font-family: "Pirata One", cursive; font-weight: 400; font-size: 1.45rem; color: var(--gold-soft); margin: 0.15rem 0 0.35rem; }
+.acard p { color: var(--txt-dim); font-size: 0.92rem; line-height: 1.5; }
+
+/* ---------- recompensas ---------- */
+.bounty-panel { padding: 1.8rem 1.8rem 1.4rem; }
+.bounty-row { margin-bottom: 1.05rem; }
+.blabel { display: flex; justify-content: space-between; font-family: "Cinzel", serif; font-size: 0.82rem; color: #dce8f5; margin-bottom: 0.3rem; }
+.blabel b { color: var(--gold); font-variant-numeric: tabular-nums; }
+.btrack { height: 15px; background: rgba(255, 255, 255, 0.07); border-radius: 10px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.1); }
+.bfill {
+  height: 100%; border-radius: 10px; width: 0%;
+  background: linear-gradient(90deg, #8a5a12, var(--gold) 55%, #fff3c4 80%, var(--gold));
+  background-size: 300% 100%; animation: shimmer 3.2s linear infinite;
+  box-shadow: 0 0 14px rgba(245, 197, 66, 0.6);
+  transition: width 1.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.bnote { text-align: center; font-size: 0.8rem; color: #7fa0c4; margin-top: 1.1rem; }
+
+/* tu recompensa */
+.yourb { max-width: 620px; margin: 3rem auto 0; text-align: center; }
+.yourb h3 { font-family: "Cinzel", serif; font-size: 1rem; letter-spacing: 0.25em; color: var(--blue); margin-bottom: 1.2rem; }
+input[type="range"].gold-slider {
+  -webkit-appearance: none; appearance: none; width: 100%; height: 10px; border-radius: 8px;
+  background: linear-gradient(90deg, rgba(245, 197, 66, 0.9) var(--fill, 40%), rgba(255, 255, 255, 0.1) var(--fill, 40%));
+  outline: none; margin-bottom: 1.6rem; cursor: pointer;
+}
+input[type="range"].gold-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 26px; height: 26px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ffe9a8, var(--gold) 60%, #c98f1e);
+  border: 3px solid #8a5a12; box-shadow: 0 0 16px rgba(245, 197, 66, 0.8); cursor: grab;
+}
+.wanted.mini { max-width: 340px; margin: 0 auto; }
+
+/* ---------- quiz ---------- */
+.quiz-wrap { max-width: 680px; margin: 0 auto; }
+.qq { margin-bottom: 1.7rem; }
+.qq h5 { font-family: "Cinzel", serif; font-size: 0.95rem; color: var(--gold-soft); margin-bottom: 0.7rem; letter-spacing: 0.04em; }
+.opts { display: flex; flex-direction: column; gap: 0.45rem; }
+.opt {
+  font-family: "Crimson Text", serif; font-size: 1rem; text-align: left;
+  padding: 0.6rem 1rem; border-radius: 12px; cursor: pointer;
+  color: var(--txt-dim); background: rgba(16, 38, 66, 0.6);
+  border: 1px solid var(--line); transition: all 0.22s ease;
+}
+.opt:hover { border-color: rgba(245, 197, 66, 0.6); transform: translateX(6px); color: var(--gold-soft); }
+.opt.sel {
+  background: linear-gradient(135deg, rgba(245, 197, 66, 0.22), rgba(224, 123, 57, 0.16));
+  border-color: var(--gold); color: var(--gold-soft);
+  box-shadow: 0 0 16px rgba(245, 197, 66, 0.25);
+}
+.btn-gold {
+  display: block; width: 100%; margin-top: 0.5rem; padding: 0.85rem 1.6rem;
+  font-family: "Cinzel", serif; font-weight: 700; font-size: 0.9rem; letter-spacing: 0.14em;
+  color: #1c1002; background: linear-gradient(135deg, var(--gold), var(--amber));
+  border: none; border-radius: 30px; cursor: pointer;
+  box-shadow: 0 10px 26px rgba(224, 123, 57, 0.4); transition: all 0.25s ease;
+}
+.btn-gold:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 16px 34px rgba(245, 197, 66, 0.5); }
+.quiz-result { margin-top: 1.6rem; text-align: center; border-color: rgba(245, 197, 66, 0.6); animation: popIn 0.5s ease both; }
+@keyframes popIn { 0% { opacity: 0; transform: scale(0.75); } 70% { transform: scale(1.05); } 100% { opacity: 1; transform: scale(1); } }
+.qr-icon { font-size: 3.2rem; }
+.qr-title { font-family: "Pirata One", cursive; font-weight: 400; font-size: 2.1rem; color: var(--gold); }
+.qr-score { font-family: "Cinzel", serif; letter-spacing: 0.22em; color: var(--gold-soft); font-size: 1.05rem; margin: 0.3rem 0; }
+
+/* ---------- footer ---------- */
+.footer {
+  position: relative; margin-top: 5rem; text-align: center; overflow: hidden;
+  padding: 3.4rem 1rem 2.2rem;
+  background: linear-gradient(180deg, rgba(10, 30, 56, 0.8), rgba(4, 11, 22, 0.98));
+  border-top: 1px solid rgba(245, 197, 66, 0.2);
+}
+.fquote { font-family: "Pirata One", cursive; font-weight: 400; font-size: 2.1rem; color: var(--gold); filter: drop-shadow(0 0 14px rgba(245, 197, 66, 0.4)); }
+.fsub { color: #9db8d8; font-style: italic; margin-top: 0.5rem; }
+.fnote { margin-top: 1.3rem; font-size: 0.75rem; color: #5f7fa2; letter-spacing: 0.08em; }
+
+/* ---------- responsive ---------- */
+@media (max-width: 900px) {
+  .nav-links { display: none; }
+  .sagas-wrap { grid-template-columns: 1fr; }
+  .side-stack { position: static; }
+}
