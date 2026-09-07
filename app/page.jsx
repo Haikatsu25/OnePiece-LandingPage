@@ -214,8 +214,10 @@ function fireConfetti() {
   tick();
 }
 
-/* ================= chat con IA (backend Python + Claude) ================= */
-const API_URL = "http://localhost:8000";
+/* ================= chat con IA (backend Python: Gemini o Claude) ================= */
+// Rutas relativas: en Vercel el backend Python vive en el mismo dominio (api/index.py);
+// en desarrollo, next.config.mjs redirige /api/py/* al FastAPI local en :8000.
+const API_URL = "";
 const CHAT_CHARS = [
   { id: "luffy", nombre: "Luffy", emoji: "👒" },
   { id: "chopper", nombre: "Chopper", emoji: "🦌" },
@@ -259,7 +261,7 @@ function ChatNakama() {
     while (hist.length && hist[0].role !== "user") hist.shift();
 
     try {
-      const res = await fetch(`${API_URL}/api/chat`, {
+      const res = await fetch(`${API_URL}/api/py/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ personaje: who, mensajes: hist }),
@@ -269,7 +271,7 @@ function ChatNakama() {
       setMsgs((m) => [...m, { role: "assistant", content: data.respuesta }]);
     } catch (err) {
       const detalle = err instanceof TypeError
-        ? "No encuentro el barco de la IA 🌫️ — arranca el backend Python: uvicorn main:app --port 8000 (carpeta backend/)."
+        ? "No encuentro el barco de la IA 🌫️ — arranca el backend Python: uvicorn api.index:app --port 8000 (desde la raíz del proyecto)."
         : String(err.message || err);
       setMsgs((m) => [...m, { role: "assistant", content: `⚠️ ${detalle}`, error: true }]);
     } finally {
