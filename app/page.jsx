@@ -214,6 +214,116 @@ function fireConfetti() {
   tick();
 }
 
+/* ================= chat con IA (backend Python + Claude) ================= */
+const API_URL = "http://localhost:8000";
+const CHAT_CHARS = [
+  { id: "luffy", nombre: "Luffy", emoji: "👒" },
+  { id: "chopper", nombre: "Chopper", emoji: "🦌" },
+  { id: "zoro", nombre: "Zoro", emoji: "⚔️" },
+];
+const SALUDOS = {
+  luffy: "¡Shishishi! ¡Hola, nakama! ¿De qué quieres hablar? ¿De aventuras… o de carne? 🍖",
+  chopper: "¡H-hola! Soy Chopper, el médico del barco. Pregúntame lo que sea… ¡p-pero no creas que me alegra que lo hagas! 💙",
+  zoro: "Hmph. Pregunta lo que quieras. Pero rápido, tengo que entrenar.",
+};
+
+function ChatNakama() {
+  const [open, setOpen] = useState(false);
+  const [who, setWho] = useState("luffy");
+  const [msgs, setMsgs] = useState([{ role: "assistant", content: SALUDOS.luffy }]);
+  const [input, setInput] = useState("");
+  const [busy, setBusy] = useState(false);
+  const bodyRef = useRef(null);
+
+  useEffect(() => {
+    const el = bodyRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [msgs, busy, open]);
+
+  const pick = (id) => {
+    setWho(id);
+    setMsgs([{ role: "assistant", content: SALUDOS[id] }]);
+  };
+
+  const send = async () => {
+    const text = input.trim();
+    if (!text || busy) return;
+    const next = [...msgs, { role: "user", content: text }];
+    setMsgs(next);
+    setInput("");
+    setBusy(true);
+
+    // El saludo inicial y los mensajes de error no van a la IA:
+    // la API exige que la conversación empiece con un mensaje del usuario.
+    const hist = next.filter((m) => !m.error).map(({ role, content }) => ({ role, content }));
+    while (hist.length && hist[0].role !== "user") hist.shift();
+
+    try {
+      const res = await fetch(`${API_URL}/api/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ personaje: who, mensajes: hist }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.detail || `Error ${res.status}`);
+      setMsgs((m) => [...m, { role: "assistant", content: data.respuesta }]);
+    } catch (err) {
+      const detalle = err instanceof TypeError
+        ? "No encuentro el barco de la IA 🌫️ — arranca el backend Python: uvicorn main:app --port 8000 (carpeta backend/)."
+        : String(err.message || err);
+      setMsgs((m) => [...m, { role: "assistant", content: `⚠️ ${detalle}`, error: true }]);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const activo = CHAT_CHARS.find((c) => c.id === who);
+
+  return (
+    <>
+      <button className={`chat-fab ${open ? "hide" : ""}`} onClick={() => setOpen(true)} aria-label="Abrir chat con la tripulación">
+        <span className="fab-emoji">👒</span>
+        <span className="fab-label">Habla con la tripulación</span>
+      </button>
+      {open && (
+        <div className="chat-panel">
+          <div className="chat-head">
+            <div className="chat-title">🏴‍☠️ Chat Nakama <span className="chat-ia">IA · Python</span></div>
+            <button className="chat-close" onClick={() => setOpen(false)} aria-label="Cerrar chat">✕</button>
+          </div>
+          <div className="chat-chars">
+            {CHAT_CHARS.map((c) => (
+              <button key={c.id} className={`chip ${who === c.id ? "on" : ""}`} onClick={() => pick(c.id)}>
+                {c.emoji} {c.nombre}
+              </button>
+            ))}
+          </div>
+          <div className="chat-body" ref={bodyRef}>
+            {msgs.map((m, i) => (
+              <div key={i} className={`bubble ${m.role === "user" ? "yo" : "ellos"} ${m.error ? "err" : ""}`}>
+                {m.content}
+              </div>
+            ))}
+            {busy && (
+              <div className="bubble ellos typing"><span /><span /><span /></div>
+            )}
+          </div>
+          <div className="chat-input">
+            <input
+              value={input}
+              placeholder={`Pregúntale algo a ${activo.nombre}…`}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && send()}
+              maxLength={500}
+            />
+            <button className="chat-send" onClick={send} disabled={busy} aria-label="Enviar">➤</button>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
 /* ================= datos ================= */
 const CREW = [
   { face: "hat", name: "Monkey D. Luffy", role: "Capitán · Futuro Rey de los Piratas", bounty: "3.000.000.000", fruit: "Gomu Gomu no Mi (Nika)" },
@@ -586,6 +696,9 @@ export default function Page() {
           )}
         </div>
       </section>
+
+      {/* ===== CHAT CON IA ===== */}
+      <ChatNakama />
 
       {/* ===== FOOTER ===== */}
       <footer className="footer">
