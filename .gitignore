@@ -1,5 +1,6 @@
 # dependencias
 node_modules/
+__pycache__/
 
 # build de Next.js
 .next/
