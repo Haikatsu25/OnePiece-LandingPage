@@ -635,9 +635,9 @@ BASE_IA = (
 )
 
 PERSONAJES_IA = {
-    "👒 Luffy": {
+    "☀️ Luffy": {
         "nombre": "Luffy",
-        "avatar": "👒",
+        "avatar": "data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20120%2066%27%3E%3Cellipse%20cx%3D%2760%27%20cy%3D%2750%27%20rx%3D%2757%27%20ry%3D%2713%27%20fill%3D%27%23e0b04a%27%20stroke%3D%27%238a5a12%27%20stroke-width%3D%272.5%27%2F%3E%3Cpath%20d%3D%27M30%2050%20Q30%2010%2060%2010%20Q90%2010%2090%2050%20Z%27%20fill%3D%27%23f5d97f%27%20stroke%3D%27%238a5a12%27%20stroke-width%3D%272.5%27%2F%3E%3Cpath%20d%3D%27M30%2050%20Q60%2042%2090%2050%20L90%2041%20Q60%2033%2030%2041%20Z%27%20fill%3D%27%23d0342c%27%20stroke%3D%27%238a2019%27%20stroke-width%3D%271.5%27%2F%3E%3C%2Fsvg%3E",
         "saludo": "¡Shishishi! ¡Hola, nakama! ¿De qué quieres hablar? ¿De aventuras… o de carne? 🍖",
         "system": BASE_IA + (
             " Eres Monkey D. Luffy: alegre, directo, algo despistado, obsesionado con la carne "
@@ -692,7 +692,7 @@ def _responder_gemini(clave, system, hist):
     ]
     cliente = genai.Client(api_key=clave)
     r = cliente.models.generate_content(
-        model="gemini-2.5-flash",
+        model=os.environ.get("GEMINI_MODEL", "gemini-3.6-flash"),
         contents=contents,
         config=types.GenerateContentConfig(system_instruction=system, max_output_tokens=1024),
     )
