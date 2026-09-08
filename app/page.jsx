@@ -328,11 +328,72 @@ function ChatNakama() {
   );
 }
 
+/* ================= video de fondo del héroe (API de YouTube) =================
+   Se controla con la IFrame API para que el reproductor SOLO sea visible mientras
+   está reproduciendo: en carga, pausa o reinicio del bucle (cuando YouTube dibuja
+   sus botones) el iframe se desvanece y se ve el fondo oscuro. */
+function HeroVideo({ id, start = 4 }) {
+  const holder = useRef(null);
+  const [playing, setPlaying] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (window.matchMedia("(max-width: 768px)").matches) return; // sin video en móvil
+    let player;
+    const init = () => {
+      if (!holder.current) return;
+      player = new window.YT.Player(holder.current, {
+        videoId: id,
+        playerVars: {
+          autoplay: 1, mute: 1, controls: 0, disablekb: 1, fs: 0, rel: 0,
+          modestbranding: 1, playsinline: 1, iv_load_policy: 3, start,
+          loop: 1, playlist: id, origin: window.location.origin,
+        },
+        events: {
+          onReady: (e) => { e.target.mute(); e.target.playVideo(); },
+          onStateChange: (e) => {
+            setPlaying(e.data === 1); // 1 = reproduciendo
+            if (e.data === 0) { e.target.seekTo(start); e.target.playVideo(); } // fin → reinicio sin pantalla final
+            if (e.data === 2) { e.target.playVideo(); } // pausa (StrictMode, cambio de pestaña) → reanudar
+          },
+        },
+      });
+    };
+    if (window.YT && window.YT.Player) init();
+    else {
+      const prev = window.onYouTubeIframeAPIReady;
+      window.onYouTubeIframeAPIReady = () => { if (prev) prev(); init(); };
+      if (!document.querySelector('script[src="https://www.youtube.com/iframe_api"]')) {
+        const s = document.createElement("script");
+        s.src = "https://www.youtube.com/iframe_api";
+        document.head.appendChild(s);
+      }
+    }
+    // Vigía: si por cualquier motivo el video no está reproduciendo, lo reanuda.
+    const watchdog = setInterval(() => {
+      try {
+        if (player && typeof player.getPlayerState === "function") {
+          const st = player.getPlayerState();
+          if (st === 2 || st === 5 || st === -1) { player.mute(); player.playVideo(); }
+        }
+      } catch (_) { /* nada */ }
+    }, 3000);
+    return () => { clearInterval(watchdog); try { player && player.destroy(); } catch (_) { /* nada */ } };
+  }, [id, start]);
+
+  return (
+    <div className={`hero-video ${playing ? "on" : ""}`} aria-hidden="true">
+      <div ref={holder} />
+      <div className="hero-video-shade" />
+    </div>
+  );
+}
+
 /* ================= videos oficiales (embebidos desde YouTube) ================= */
 const VIDEOS = [
   { id: "S-XxKVxZ2fU", tag: "Netflix · Live Action", title: "ONE PIECE: Temporada 2", desc: "Rumbo a la Grand Line: el tráiler oficial de la segunda temporada del live-action." },
   { id: "Z-k-7APkhVw", tag: "Toei Animation · Anime", title: "Saga de Egghead: Clímax", desc: "El avance oficial del clímax en la isla del futuro del Dr. Vegapunk." },
-  { id: "89JWRYEIG-s", tag: "Crunchyroll · Película", title: "One Piece Film: Red", desc: "El tráiler oficial de la película de Uta, la más taquillera de la franquicia." },
+  { id: "QCEydAPPZUQ", tag: "Diamond Films · Película", title: "One Piece Film: Red", desc: "El tráiler oficial de la película de Uta, la más taquillera de la franquicia." },
   { id: "3Gmo0EXHyKg", tag: "Netflix · WIT Studio", title: "THE ONE PIECE (remake)", desc: "Primer teaser oficial del remake del anime, de vuelta a East Blue." },
 ];
 
@@ -494,15 +555,7 @@ export default function Page() {
 
       {/* ===== HÉROE ===== */}
       <header className="hero">
-        <div className="hero-video" aria-hidden="true">
-          <iframe
-            src="https://www.youtube-nocookie.com/embed/Z-k-7APkhVw?autoplay=1&mute=1&loop=1&playlist=Z-k-7APkhVw&controls=0&modestbranding=1&playsinline=1&rel=0&start=4"
-            title="Tráiler oficial de One Piece (fondo)"
-            allow="autoplay; encrypted-media"
-            tabIndex={-1}
-          />
-          <div className="hero-video-shade" />
-        </div>
+        <HeroVideo id="Z-k-7APkhVw" start={4} />
         <div className="hero-stars">
           {[["10%", "8%", 0], ["20%", "18%", 0.7], ["8%", "38%", 1.4], ["16%", "62%", 0.3], ["7%", "82%", 1], ["28%", "91%", 1.8], ["34%", "4%", 2.2], ["40%", "73%", 0.9], ["48%", "12%", 1.6], ["52%", "88%", 2.4]].map(([t, l, d], i) => (
             <span key={i} style={{ top: t, left: l, animationDelay: `${d}s` }}>✦</span>
@@ -719,7 +772,7 @@ export default function Page() {
       <section className="block" id="videos">
         <div className="reveal">
           <div className="divider"><h2 className="dtitle">Tráilers Oficiales</h2></div>
-          <span className="dsub">Netflix · Toei Animation · Crunchyroll</span>
+          <span className="dsub">Netflix · Toei Animation · Diamond Films</span>
           <p className="intro">Los avances oficiales, directo desde los canales de sus estudios. 🎬</p>
         </div>
         <div className="video-grid">

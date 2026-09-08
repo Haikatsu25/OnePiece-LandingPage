@@ -378,9 +378,11 @@ input[type="range"].gold-slider::-webkit-slider-thumb {
 .hero-video iframe {
   position: absolute; top: 50%; left: 50%;
   width: max(100vw, 177.78vh); height: max(56.25vw, 100vh);
-  transform: translate(-50%, -50%); border: 0; pointer-events: none;
-  opacity: 0.6; filter: saturate(1.2) contrast(1.05);
+  transform: translate(-50%, -50%) scale(1.12); border: 0; pointer-events: none;
+  opacity: 0; filter: saturate(1.2) contrast(1.05);
+  transition: opacity 1.4s ease;
 }
+.hero-video.on iframe { opacity: 0.6; }
 .hero-video-shade {
   position: absolute; inset: 0;
   background:
