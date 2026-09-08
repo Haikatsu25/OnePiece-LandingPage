@@ -89,6 +89,7 @@ function NavBar() {
           <li><a href="#frutas">Frutas</a></li>
           <li><a href="#sagas">Sagas</a></li>
           <li><a href="#anime">Anime</a></li>
+          <li><a href="#videos">Videos</a></li>
           <li><a href="#recompensas">Recompensas</a></li>
           <li><a href="#quiz">Quiz</a></li>
         </ul>
@@ -284,7 +285,7 @@ function ChatNakama() {
   return (
     <>
       <button className={`chat-fab ${open ? "hide" : ""}`} onClick={() => setOpen(true)} aria-label="Abrir chat con la tripulación">
-        <span className="fab-emoji">👒</span>
+        <span className="fab-emoji"><StrawHat width={34} uid="fab" /></span>
         <span className="fab-label">Habla con la tripulación</span>
       </button>
       {open && (
@@ -296,7 +297,7 @@ function ChatNakama() {
           <div className="chat-chars">
             {CHAT_CHARS.map((c) => (
               <button key={c.id} className={`chip ${who === c.id ? "on" : ""}`} onClick={() => pick(c.id)}>
-                {c.emoji} {c.nombre}
+                {c.id === "luffy" ? <StrawHat width={22} uid="chip" /> : c.emoji} {c.nombre}
               </button>
             ))}
           </div>
@@ -325,6 +326,14 @@ function ChatNakama() {
     </>
   );
 }
+
+/* ================= videos oficiales (embebidos desde YouTube) ================= */
+const VIDEOS = [
+  { id: "S-XxKVxZ2fU", tag: "Netflix · Live Action", title: "ONE PIECE: Temporada 2", desc: "Rumbo a la Grand Line: el tráiler oficial de la segunda temporada del live-action." },
+  { id: "Z-k-7APkhVw", tag: "Toei Animation · Anime", title: "Saga de Egghead: Clímax", desc: "El avance oficial del clímax en la isla del futuro del Dr. Vegapunk." },
+  { id: "89JWRYEIG-s", tag: "Crunchyroll · Película", title: "One Piece Film: Red", desc: "El tráiler oficial de la película de Uta, la más taquillera de la franquicia." },
+  { id: "3Gmo0EXHyKg", tag: "Netflix · WIT Studio", title: "THE ONE PIECE (remake)", desc: "Primer teaser oficial del remake del anime, de vuelta a East Blue." },
+];
 
 /* ================= datos ================= */
 const CREW = [
@@ -442,6 +451,15 @@ export default function Page() {
 
       {/* ===== HÉROE ===== */}
       <header className="hero">
+        <div className="hero-video" aria-hidden="true">
+          <iframe
+            src="https://www.youtube-nocookie.com/embed/Z-k-7APkhVw?autoplay=1&mute=1&loop=1&playlist=Z-k-7APkhVw&controls=0&modestbranding=1&playsinline=1&rel=0&start=4"
+            title="Tráiler oficial de One Piece (fondo)"
+            allow="autoplay; encrypted-media"
+            tabIndex={-1}
+          />
+          <div className="hero-video-shade" />
+        </div>
         <div className="hero-stars">
           {[["10%", "8%", 0], ["20%", "18%", 0.7], ["8%", "38%", 1.4], ["16%", "62%", 0.3], ["7%", "82%", 1], ["28%", "91%", 1.8], ["34%", "4%", 2.2], ["40%", "73%", 0.9], ["48%", "12%", 1.6], ["52%", "88%", 2.4]].map(([t, l, d], i) => (
             <span key={i} style={{ top: t, left: l, animationDelay: `${d}s` }}>✦</span>
@@ -459,6 +477,7 @@ export default function Page() {
           <span className="pill">🍈 Frutas del Diablo</span>
           <span className="pill">🗺️ 11 Sagas</span>
           <span className="pill">📺 Desde 1999</span>
+          <span className="pill">🎬 Tráilers oficiales</span>
         </div>
         <div className="hero-ship"><span>⛵</span></div>
         <a className="hero-scroll" href="#tripulacion" aria-label="Bajar">⌄</a>
@@ -621,6 +640,37 @@ export default function Page() {
         </div>
       </section>
 
+      {/* ===== VIDEOS OFICIALES ===== */}
+      <section className="block" id="videos">
+        <div className="reveal">
+          <div className="divider"><h2 className="dtitle">Tráilers Oficiales</h2></div>
+          <span className="dsub">Netflix · Toei Animation · Crunchyroll</span>
+          <p className="intro">Los avances oficiales, directo desde los canales de sus estudios. 🎬</p>
+        </div>
+        <div className="video-grid">
+          {VIDEOS.map((v, i) => (
+            <div className="reveal" style={{ transitionDelay: `${(i % 2) * 0.1}s` }} key={v.id}>
+              <article className="video-card">
+                <div className="video-frame">
+                  <iframe
+                    src={`https://www.youtube-nocookie.com/embed/${v.id}?rel=0&modestbranding=1`}
+                    title={v.title}
+                    loading="lazy"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
+                <div className="video-meta">
+                  <span className="video-tag">{v.tag}</span>
+                  <h3>{v.title}</h3>
+                  <p>{v.desc}</p>
+                </div>
+              </article>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* ===== RECOMPENSAS ===== */}
       <section className="block" id="recompensas">
         <div className="reveal">
@@ -707,6 +757,14 @@ export default function Page() {
         <div style={{ fontSize: "2.2rem", marginBottom: "0.4rem" }}>🏴‍☠️</div>
         <div className="fquote">«El One Piece… ¡existe!»</div>
         <div className="fsub">— Edward Newgate, Barbablanca. Sus últimas palabras encendieron la Gran Era Pirata.</div>
+        <div className="flinks">
+          <span>Sitios oficiales:</span>
+          <a href="https://one-piece.com/" target="_blank" rel="noopener noreferrer">one-piece.com</a>
+          <a href="https://www.toei-anim.co.jp/tv/onep/" target="_blank" rel="noopener noreferrer">Toei Animation</a>
+          <a href="https://www.netflix.com/title/80217863" target="_blank" rel="noopener noreferrer">Netflix</a>
+          <a href="https://www.crunchyroll.com/series/GRMG8ZQZR/one-piece" target="_blank" rel="noopener noreferrer">Crunchyroll</a>
+          <a href="https://www.shonenjump.com/j/rensai/onepiece.html" target="_blank" rel="noopener noreferrer">Shōnen Jump</a>
+        </div>
         <div className="fnote">Página fan sin ánimo de lucro · One Piece © Eiichiro Oda / Shueisha · Hecha con ❤️ y Next.js</div>
       </footer>
     </main>

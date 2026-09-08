@@ -2,7 +2,7 @@
 """Grand Line API — backend en Python (FastAPI) con IA.
 
 Funciona con dos proveedores (usa el primero cuya clave exista):
-  · GEMINI_API_KEY     → Google Gemini (gemini-2.5-flash, tiene capa gratuita)
+  · GEMINI_API_KEY     → Google Gemini (gemini-3.6-flash por defecto, configurable con GEMINI_MODEL)
   · ANTHROPIC_API_KEY  → API de Claude (claude-opus-5)
 
 En local:
@@ -106,7 +106,7 @@ def _chat_gemini(system: str, historial: list[dict]) -> str:
         for m in historial
     ]
     resp = client.models.generate_content(
-        model="gemini-2.5-flash",
+        model=os.environ.get("GEMINI_MODEL", "gemini-3.6-flash"),
         contents=contents,
         config=types.GenerateContentConfig(
             system_instruction=system,
