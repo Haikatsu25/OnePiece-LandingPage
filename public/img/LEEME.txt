@@ -1,0 +1,7 @@
+Coloca aqui las 5 imagenes de la galeria con estos nombres exactos:
+
+  estatuas-kumamoto.jpg   -> estatuas de bronce de los Mugiwara (Kumamoto)
+  gear4-snakeman.jpg      -> Luffy Gear 4 Snakeman
+  luffy-vs-kaido.jpg      -> Luffy vs Kaido en Onigashima (morada/roja)
+  gear5-toei.jpg          -> Gear 5 (imagen de Toei Animation)
+  gear5-vs-kaido.jpg      -> Gear 5 golpeando a Kaido (clímax)

@@ -89,6 +89,7 @@ function NavBar() {
           <li><a href="#frutas">Frutas</a></li>
           <li><a href="#sagas">Sagas</a></li>
           <li><a href="#anime">Anime</a></li>
+          <li><a href="#galeria">Galería</a></li>
           <li><a href="#videos">Videos</a></li>
           <li><a href="#recompensas">Recompensas</a></li>
           <li><a href="#quiz">Quiz</a></li>
@@ -335,6 +336,40 @@ const VIDEOS = [
   { id: "3Gmo0EXHyKg", tag: "Netflix · WIT Studio", title: "THE ONE PIECE (remake)", desc: "Primer teaser oficial del remake del anime, de vuelta a East Blue." },
 ];
 
+/* ================= galería (imágenes en public/img/) ================= */
+const GALERIA = [
+  {
+    src: "/img/estatuas-kumamoto.jpg", span: "wide", tag: "Kumamoto, Japón · Mundo real",
+    title: "Las estatuas de bronce de los Mugiwara", alt: "Estatuas de bronce de los diez Sombrero de Paja en Kumamoto",
+    short: "Diez estatuas reales repartidas por la prefectura natal de Oda.",
+    desc: "Tras el terremoto de Kumamoto de 2016, Eiichiro Oda —nacido allí— impulsó el proyecto de revitalización «One Piece Kumamoto»: desde 2018 se erigieron estatuas de bronce de los diez Sombrero de Paja en las localidades afectadas. Luffy vigila el Ayuntamiento de Kumamoto y cada nakama «protege» un municipio distinto, atrayendo a miles de fans que recorren la ruta completa.",
+  },
+  {
+    src: "/img/gear4-snakeman.jpg", pos: "50% 18%", tag: "Whole Cake Island · Anime",
+    title: "Gear 4: Snakeman", alt: "Luffy en Gear 4 Snakeman",
+    short: "La forma más veloz de Luffy, nacida en el Mundo Espejo.",
+    desc: "En el duelo contra Charlotte Katakuri, Luffy revela Snakeman: una variante del Gear 4 que sacrifica potencia por una velocidad y flexibilidad extremas. Sus puñetazos cambian de trayectoria en el aire —el «Python del Rey Cobra»— y le permiten igualar el Haki de Observación del futuro de Katakuri en uno de los combates más aclamados de la serie.",
+  },
+  {
+    src: "/img/luffy-vs-kaido.jpg", tag: "Wano · Onigashima",
+    title: "Luffy contra Kaido", alt: "Luffy enfrentando a Kaido en el tejado de Onigashima",
+    short: "El choque de Haki que sacudió el tejado de Onigashima.",
+    desc: "En la Isla de los Ogros, Luffy se enfrenta a Kaido, «la criatura más fuerte del mundo». Ambos cubren sus golpes con Haki del Rey Conquistador, algo que solo un puñado de personas en el mundo puede hacer. Es el momento en que Luffy deja de ser un retador para convertirse en rival real de un Emperador del Mar.",
+  },
+  {
+    src: "/img/gear5-toei.jpg", tag: "Episodio 1071 · Toei Animation",
+    title: "Gear 5: el despertar de Nika", alt: "Luffy en Gear 5 riendo, imagen promocional de Toei Animation",
+    short: "La fruta de Luffy revela su verdadero nombre.",
+    desc: "El 6 de agosto de 2023 se emitió el episodio 1071 y el mundo descubrió que la Gomu Gomu no Mi era en realidad la Hito Hito no Mi modelo Nika, el Dios del Sol. Con cabello y ropa blancos, un corazón que late como un tambor y poderes de caricatura, Luffy se convierte en «el guerrero más libre». El estreno saturó las plataformas de streaming.",
+  },
+  {
+    src: "/img/gear5-vs-kaido.jpg", tag: "Wano · Clímax",
+    title: "El golpe que liberó a Wano", alt: "Luffy en Gear 5 golpeando a Kaido",
+    short: "Gear 5 contra el Rey de las Bestias: el final de la saga.",
+    desc: "Con el poder de Nika, Luffy agranda su puño hasta el tamaño de la propia Onigashima para el Gomu Gomu no Bajrang Gun, el golpe que hunde a Kaido y pone fin a veinte años de tiranía en Wano. Tras esta victoria, los periódicos del mundo proclaman a Luffy nuevo Emperador del Mar.",
+  },
+];
+
 /* ================= datos ================= */
 const CREW = [
   { face: "hat", name: "Monkey D. Luffy", role: "Capitán · Futuro Rey de los Piratas", bounty: "3.000.000.000", fruit: "Gomu Gomu no Mi (Nika)" },
@@ -442,6 +477,14 @@ export default function Page() {
   };
 
   const maxBounty = BOUNTIES[0][1];
+
+  /* galería (lightbox) */
+  const [foto, setFoto] = useState(null);
+  useEffect(() => {
+    const onKey = (e) => e.key === "Escape" && setFoto(null);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   return (
     <main id="top">
@@ -640,6 +683,38 @@ export default function Page() {
         </div>
       </section>
 
+      {/* ===== GALERÍA ===== */}
+      <section className="block" id="galeria">
+        <div className="reveal">
+          <div className="divider"><h2 className="dtitle">Galería</h2></div>
+          <span className="dsub">Momentos que marcaron la Gran Era Pirata</span>
+          <p className="intro">Pasa el cursor sobre cada imagen para leer su historia y haz clic para verla en grande. 📸</p>
+        </div>
+        <div className="gal-grid">
+          {GALERIA.map((g, i) => (
+            <figure
+              className={`gal-item reveal ${g.span || ""}`}
+              style={{ transitionDelay: `${(i % 3) * 0.08}s` }}
+              key={g.src}
+              onClick={() => setFoto(g)}
+            >
+              <img
+                src={g.src} alt={g.alt} loading="lazy"
+                style={g.pos ? { objectPosition: g.pos } : undefined}
+                onError={(e) => e.currentTarget.parentElement.classList.add("missing")}
+              />
+              <figcaption>
+                <span className="gal-tag">{g.tag}</span>
+                <h3>{g.title}</h3>
+                <p>{g.short}</p>
+              </figcaption>
+              <div className="gal-missing">Falta la imagen<br /><code>public{g.src}</code></div>
+            </figure>
+          ))}
+        </div>
+        <p className="gal-credit">Imágenes © Eiichiro Oda / Shueisha / Toei Animation · Uso ilustrativo, sin fines de lucro.</p>
+      </section>
+
       {/* ===== VIDEOS OFICIALES ===== */}
       <section className="block" id="videos">
         <div className="reveal">
@@ -748,6 +823,21 @@ export default function Page() {
           )}
         </div>
       </section>
+
+      {/* ===== LIGHTBOX DE LA GALERÍA ===== */}
+      {foto && (
+        <div className="lightbox" onClick={() => setFoto(null)} role="dialog" aria-modal="true">
+          <div className="lb-inner" onClick={(e) => e.stopPropagation()}>
+            <button className="lb-close" onClick={() => setFoto(null)} aria-label="Cerrar">✕</button>
+            <img src={foto.src} alt={foto.alt} />
+            <div className="lb-info">
+              <span className="gal-tag">{foto.tag}</span>
+              <h3>{foto.title}</h3>
+              <p>{foto.desc}</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ===== CHAT CON IA ===== */}
       <ChatNakama />
