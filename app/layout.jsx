@@ -4,7 +4,8 @@ export const metadata = {
   title: "Grand Line | One Piece",
   description: "Un homenaje interactivo a One Piece — tripulación, frutas del diablo, sagas, recompensas y más.",
   icons: {
-    icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏴‍☠️</text></svg>",
+    // URL-encodado (%3C = <, %3E = >) para ser un data URI válido según el validador W3C
+    icon: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8F%B4%E2%80%8D%E2%98%A0%EF%B8%8F%3C/text%3E%3C/svg%3E",
   },
 };
 

@@ -477,7 +477,7 @@ export default function Page() {
       {/* ===== TRIPULACIÓN ===== */}
       <section className="block" id="tripulacion">
         <div className="reveal">
-          <div className="divider"><span className="dtitle">Los Sombrero de Paja</span></div>
+          <div className="divider"><h2 className="dtitle">Los Sombrero de Paja</h2></div>
           <span className="dsub">Mugiwara no Ichimi</span>
           <p className="intro">Diez sueños, un solo barco. Mueve el cursor sobre cada cartel… si te atreves. 🏴‍☠️</p>
         </div>
@@ -503,7 +503,7 @@ export default function Page() {
       {/* ===== FRUTAS ===== */}
       <section className="block" id="frutas">
         <div className="reveal">
-          <div className="divider"><span className="dtitle">Frutas del Diablo</span></div>
+          <div className="divider"><h2 className="dtitle">Frutas del Diablo</h2></div>
           <span className="dsub">Akuma no Mi · El poder del mar tiene un precio</span>
           <p className="intro">Pasa el cursor sobre cada carta para voltearla y descubrir sus secretos. 🍈</p>
         </div>
@@ -531,7 +531,7 @@ export default function Page() {
         <div className="reveal" style={{ marginTop: "1.4rem" }}>
           <div className="panel" style={{ textAlign: "center" }}>
             <span style={{ fontSize: "2rem" }}>🌊</span>
-            <h4>La maldición del mar</h4>
+            <h3>La maldición del mar</h3>
             <p style={{ maxWidth: 720, margin: "0.4rem auto 0" }}>
               Quien muerde una Fruta del Diablo obtiene un poder extraordinario… pero el océano lo rechaza para siempre:
               los usuarios se hunden como martillos y el <b style={{ color: "var(--gold-soft)" }}>kairoseki</b> anula
@@ -544,7 +544,7 @@ export default function Page() {
       {/* ===== SAGAS ===== */}
       <section className="block" id="sagas">
         <div className="reveal">
-          <div className="divider"><span className="dtitle">La Gran Travesía</span></div>
+          <div className="divider"><h2 className="dtitle">La Gran Travesía</h2></div>
           <span className="dsub">De East Blue a la última isla</span>
         </div>
         <div className="sagas-wrap">
@@ -552,7 +552,7 @@ export default function Page() {
             {SAGAS.map(([name, meta, desc], i) => (
               <div className="tl-item reveal" style={{ transitionDelay: `${(i % 4) * 0.07}s` }} key={name}>
                 <div className="tlmeta">{meta}</div>
-                <h5>{i + 1}. {name}</h5>
+                <h3>{i + 1}. {name}</h3>
                 <p>{desc}</p>
               </div>
             ))}
@@ -560,12 +560,12 @@ export default function Page() {
           <div className="side-stack">
             <div className="panel reveal">
               <span className="logpose">🧭</span>
-              <h4>Log Pose</h4>
+              <h3>Log Pose</h3>
               <p>En la Grand Line las brújulas normales enloquecen. Solo un Log Pose puede guiarte de isla en isla…
                 y solo el <b style={{ color: "var(--gold-soft)" }}>Road Poneglyph</b> ×4 revela Laugh Tale.</p>
             </div>
             <div className="panel reveal">
-              <h4>📜 Cifras de leyenda</h4>
+              <h3>📜 Cifras de leyenda</h3>
               <p>
                 <span className="bignum"><CountUp value={1100} /></span>+ capítulos del manga<br />
                 <span className="bignum"><CountUp value={1100} /></span>+ episodios del anime<br />
@@ -575,7 +575,7 @@ export default function Page() {
             </div>
             <div className="panel reveal">
               <span style={{ fontSize: "2rem" }}>🔔</span>
-              <h4>¿Sabías que…?</h4>
+              <h3>¿Sabías que…?</h3>
               <p>Oda prometió que el final de One Piece haría que la Guerra de Marineford «pareciera un juego de niños».</p>
             </div>
           </div>
@@ -585,7 +585,7 @@ export default function Page() {
       {/* ===== ANIME ===== */}
       <section className="block" id="anime">
         <div className="reveal">
-          <div className="divider"><span className="dtitle">Historia del Anime</span></div>
+          <div className="divider"><h2 className="dtitle">Historia del Anime</h2></div>
           <span className="dsub">Más de 25 años navegando en la televisión</span>
         </div>
         <div className="anime-stats reveal">
@@ -604,7 +604,7 @@ export default function Page() {
               <div className="ayear">{year}</div>
               <div className="abadge">{icon}</div>
               <div className="ayearlab">{year}</div>
-              <h6>{title}</h6>
+              <h3>{title}</h3>
               <p>{desc}</p>
             </article>
           ))}
@@ -612,7 +612,7 @@ export default function Page() {
         <div className="reveal" style={{ marginTop: "0.6rem" }}>
           <div className="panel" style={{ textAlign: "center" }}>
             <span style={{ fontSize: "2rem" }}>🎶</span>
-            <h4>«¡Arittake no yume o kakiatsume!»</h4>
+            <h3>«¡Arittake no yume o kakiatsume!»</h3>
             <p style={{ maxWidth: 700, margin: "0.4rem auto 0" }}>
               Del «We Are!» original al «UUUUUS!» de la saga final, cada opening marca una era.
               Millones de fans no pueden escuchar los primeros acordes sin que se les ponga la piel de gallina.
@@ -624,7 +624,7 @@ export default function Page() {
       {/* ===== RECOMPENSAS ===== */}
       <section className="block" id="recompensas">
         <div className="reveal">
-          <div className="divider"><span className="dtitle">Las Mayores Recompensas</span></div>
+          <div className="divider"><h2 className="dtitle">Las Mayores Recompensas</h2></div>
           <span className="dsub">Los monstruos que gobiernan los mares</span>
         </div>
         <div className="panel bounty-panel reveal">
@@ -655,13 +655,13 @@ export default function Page() {
       {/* ===== QUIZ ===== */}
       <section className="block" id="quiz">
         <div className="reveal">
-          <div className="divider"><span className="dtitle">Pon a prueba tu Haki</span></div>
+          <div className="divider"><h2 className="dtitle">Pon a prueba tu Haki</h2></div>
           <span className="dsub">5 preguntas · Solo un verdadero nakama las supera</span>
         </div>
         <div className="quiz-wrap">
           {QUIZ.map(([q, opts], qi) => (
             <div className="qq reveal" key={qi}>
-              <h5>{qi + 1}. {q}</h5>
+              <h3>{qi + 1}. {q}</h3>
               <div className="opts">
                 {opts.map((opt, oi) => (
                   <button
