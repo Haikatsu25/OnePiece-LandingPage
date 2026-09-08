@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
-"""Grand Line — Página fan de One Piece hecha con Streamlit."""
+"""Grand Line — Página fan de One Piece hecha con Streamlit (versión con IA)."""
+import os
+
 import streamlit as st
+import streamlit.components.v1 as components
 
 st.set_page_config(
     page_title="Grand Line | One Piece",
@@ -251,6 +254,18 @@ div[role="tablist"]:after, div[role="tablist"]:before { display:none !important;
     margin:0 0 .25rem !important; padding:0 !important; font-weight:400 !important; }
 .atl-card p { color:#c3d4e8; margin:0; font-size:.93rem; line-height:1.45; }
 
+/* ---------- chat nakama ---------- */
+[data-testid="stChatMessage"] {
+    background: linear-gradient(160deg, rgba(16,38,66,.85), rgba(9,24,44,.92));
+    border: 1px solid rgba(120,170,230,.22);
+    border-radius: 16px;
+    padding: .55rem .8rem;
+    margin-bottom: .35rem;
+    animation: fadeUp .4s ease both;
+}
+[data-testid="stChatInput"] { border-radius: 24px; border: 1px solid rgba(245,197,66,.35); }
+[data-testid="stChatInput"]:focus-within { border-color: rgba(245,197,66,.7); box-shadow: 0 0 14px rgba(245,197,66,.25); }
+
 /* ---------- footer ---------- */
 .footer { position:relative; margin-top:3.5rem; text-align:center; padding:2.6rem 1rem 2rem; border-radius:22px; overflow:hidden;
     background: linear-gradient(180deg, rgba(10,30,56,.8), rgba(6,16,32,.95)); border:1px solid rgba(120,170,230,.18); }
@@ -302,8 +317,8 @@ st.markdown("""
 # ============================================================
 #  PESTAÑAS
 # ============================================================
-tab_crew, tab_fruits, tab_sagas, tab_anime, tab_bounty, tab_quiz = st.tabs([
-    "🏴‍☠️ La Tripulación", "🍈 Frutas del Diablo", "🗺️ Las Sagas", "📺 Historia del Anime", "💰 Recompensas", "🧭 Pon a prueba tu Haki"
+tab_crew, tab_fruits, tab_sagas, tab_anime, tab_bounty, tab_quiz, tab_chat = st.tabs([
+    "🏴‍☠️ La Tripulación", "🍈 Frutas del Diablo", "🗺️ Las Sagas", "📺 Historia del Anime", "💰 Recompensas", "🧭 Pon a prueba tu Haki", "🤖 Chat Nakama"
 ])
 
 # ------------------------------------------------------------
@@ -609,6 +624,121 @@ with tab_quiz:
               <p>{msg}</p>
             </div>
             """, unsafe_allow_html=True)
+
+# ------------------------------------------------------------
+#  CHAT NAKAMA — IA con Gemini
+# ------------------------------------------------------------
+BASE_IA = (
+    "Estás en una página fan de One Piece. Respondes SIEMPRE en español, en 2-4 frases, "
+    "con conocimiento experto del manga y el anime. Si te preguntan por los capítulos "
+    "más recientes, adviertes de spoilers antes de responder. Nunca rompas el personaje."
+)
+
+PERSONAJES_IA = {
+    "👒 Luffy": {
+        "nombre": "Luffy",
+        "avatar": "👒",
+        "saludo": "¡Shishishi! ¡Hola, nakama! ¿De qué quieres hablar? ¿De aventuras… o de carne? 🍖",
+        "system": BASE_IA + (
+            " Eres Monkey D. Luffy: alegre, directo, algo despistado, obsesionado con la carne "
+            "y con ser el Rey de los Piratas. Hablas con energía («¡Shishishi!»), llamas «nakama» "
+            "al usuario y todo lo relacionas con la aventura y la comida."
+        ),
+    },
+    "🦌 Chopper": {
+        "nombre": "Chopper",
+        "avatar": "🦌",
+        "saludo": "¡H-hola! Soy Chopper, el médico del barco. Pregúntame lo que sea… ¡p-pero no creas que me alegra que lo hagas! 💙",
+        "system": BASE_IA + (
+            " Eres Tony Tony Chopper: tierno, entusiasta y muy inteligente en medicina. "
+            "Si te halagan respondes «¡¿Crees que eso me hace feliz?! ¡Idiota~!» mientras bailas. "
+            "Explicas las cosas con dulzura y precisión de médico."
+        ),
+    },
+    "⚔️ Zoro": {
+        "nombre": "Zoro",
+        "avatar": "⚔️",
+        "saludo": "Hmph. Pregunta lo que quieras. Pero rápido, tengo que entrenar.",
+        "system": BASE_IA + (
+            " Eres Roronoa Zoro: serio, lacónico, honorable, siempre dispuesto a entrenar. "
+            "Respondes con frases cortas y contundentes, a veces refunfuñas, y de vez en cuando "
+            "admites que estás perdido aunque el camino sea recto."
+        ),
+    },
+}
+
+
+def _clave_gemini():
+    if os.environ.get("GEMINI_API_KEY"):
+        return os.environ["GEMINI_API_KEY"]
+    try:
+        return st.secrets["GEMINI_API_KEY"]
+    except Exception:
+        return None
+
+
+def _responder_gemini(clave, system, hist):
+    from google import genai
+    from google.genai import types
+
+    # El saludo inicial y los avisos de error no van a la IA:
+    # Gemini espera que la conversación empiece con un turno del usuario.
+    limpio = [m for m in hist if not m["content"].startswith("⚠️")]
+    while limpio and limpio[0]["role"] != "user":
+        limpio.pop(0)
+    contents = [
+        {"role": "user" if m["role"] == "user" else "model", "parts": [{"text": m["content"]}]}
+        for m in limpio[-20:]
+    ]
+    cliente = genai.Client(api_key=clave)
+    r = cliente.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=contents,
+        config=types.GenerateContentConfig(system_instruction=system, max_output_tokens=1024),
+    )
+    return r.text or "…"
+
+
+with tab_chat:
+    st.markdown("""
+    <div class="divider"><div><span class="dtitle">Chat Nakama</span>
+    <span class="dsub">Habla con la tripulación · IA con Gemini</span></div></div>
+    """, unsafe_allow_html=True)
+
+    cc1, cc2, cc3 = st.columns([1, 2, 1])
+    with cc2:
+        sel = st.radio("Elige a tu nakama", list(PERSONAJES_IA), horizontal=True, label_visibility="collapsed")
+        p = PERSONAJES_IA[sel]
+
+        if st.session_state.get("chat_who") != sel:
+            st.session_state.chat_who = sel
+            st.session_state.chat_hist = [{"role": "assistant", "content": p["saludo"]}]
+
+        for m in st.session_state.chat_hist:
+            avatar = p["avatar"] if m["role"] == "assistant" else "🏴‍☠️"
+            with st.chat_message(m["role"], avatar=avatar):
+                st.markdown(m["content"])
+
+        pregunta = st.chat_input(f"Pregúntale algo a {p['nombre']}…", max_chars=500)
+        if pregunta:
+            st.session_state.chat_hist.append({"role": "user", "content": pregunta})
+            with st.chat_message("user", avatar="🏴‍☠️"):
+                st.markdown(pregunta)
+
+            clave = _clave_gemini()
+            with st.chat_message("assistant", avatar=p["avatar"]):
+                if not clave:
+                    resp = ("⚠️ Falta configurar `GEMINI_API_KEY`. Consíguela gratis en "
+                            "[aistudio.google.com/apikey](https://aistudio.google.com/apikey) y agrégala "
+                            "en los *Secrets* de la app (o como variable de entorno en local).")
+                else:
+                    with st.spinner(f"{p['nombre']} está pensando…"):
+                        try:
+                            resp = _responder_gemini(clave, p["system"], st.session_state.chat_hist)
+                        except Exception as e:
+                            resp = f"⚠️ Error de Gemini: {str(e)[:160]}"
+                st.markdown(resp)
+            st.session_state.chat_hist.append({"role": "assistant", "content": resp})
 
 # ============================================================
 #  FOOTER
