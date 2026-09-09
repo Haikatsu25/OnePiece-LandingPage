@@ -756,12 +756,12 @@ export default function Page() {
                 style={g.pos ? { objectPosition: g.pos } : undefined}
                 onError={(e) => e.currentTarget.parentElement.classList.add("missing")}
               />
+              <div className="gal-missing">Falta la imagen<br /><code>public{g.src}</code></div>
               <figcaption>
                 <span className="gal-tag">{g.tag}</span>
                 <h3>{g.title}</h3>
                 <p>{g.short}</p>
               </figcaption>
-              <div className="gal-missing">Falta la imagen<br /><code>public{g.src}</code></div>
             </figure>
           ))}
         </div>
