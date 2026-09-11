@@ -17,7 +17,7 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 body {
-  font-family: "Crimson Text", serif;
+  font-family: var(--font-crimson), "Crimson Text", serif;
   color: var(--txt);
   background: var(--ink);
   overflow-x: hidden;
@@ -33,9 +33,9 @@ body {
     linear-gradient(180deg, #050d1a 0%, #071426 45%, #04101f 100%);
   animation: auroraShift 18s ease-in-out infinite alternate;
 }
-@keyframes auroraShift {
-  0%   { filter: hue-rotate(0deg) brightness(1); }
-  100% { filter: hue-rotate(18deg) brightness(1.12); }
+@keyframes auroraShift { /* opacidad = solo compositor, sin repintado continuo */
+  0%   { opacity: 0.82; }
+  100% { opacity: 1; }
 }
 .particles { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
 
@@ -69,13 +69,13 @@ body {
 }
 .nav.scrolled { background: rgba(5, 13, 26, 0.88); }
 .nav-brand {
-  font-family: "Pirata One", cursive; font-size: 1.5rem; color: var(--gold);
+  font-family: var(--font-pirata), "Pirata One", cursive; font-size: 1.5rem; color: var(--gold);
   display: flex; align-items: center; gap: 0.5rem; text-decoration: none;
   filter: drop-shadow(0 0 10px rgba(245, 197, 66, 0.4));
 }
 .nav-links { display: flex; gap: 1.3rem; list-style: none; }
 .nav-links a {
-  font-family: "Cinzel", serif; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.18em;
+  font-family: var(--font-cinzel), "Cinzel", serif; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.18em;
   color: var(--blue); text-decoration: none; text-transform: uppercase;
   position: relative; padding: 0.3rem 0; transition: color 0.25s ease;
 }
@@ -96,7 +96,7 @@ body {
 .hero-stars span { position: absolute; color: #fdf3c8; font-size: 0.8rem; animation: sparkle 3.2s ease-in-out infinite; }
 .hero-hat { animation: floaty 4.5s ease-in-out infinite; filter: drop-shadow(0 16px 26px rgba(0, 0, 0, 0.65)); margin-bottom: 0.6rem; will-change: transform; }
 .hero-title {
-  font-family: "Pirata One", cursive; font-weight: 400;
+  font-family: var(--font-pirata), "Pirata One", cursive; font-weight: 400;
   font-size: clamp(4rem, 11vw, 8.5rem); line-height: 1; letter-spacing: 0.05em;
   background: linear-gradient(90deg, #f5c542, #fff3c4, #e07b39, #f5c542);
   background-size: 200% auto;
@@ -104,7 +104,7 @@ body {
   animation: titleFlow 5s linear infinite, glowPulse 4s ease-in-out infinite;
 }
 .hero-sub {
-  font-family: "Cinzel", serif; font-weight: 700; letter-spacing: 0.45em;
+  font-family: var(--font-cinzel), "Cinzel", serif; font-weight: 700; letter-spacing: 0.45em;
   color: var(--blue); font-size: clamp(0.75rem, 2vw, 1.05rem);
   text-transform: uppercase; margin-top: 0.9rem;
 }
@@ -115,7 +115,7 @@ body {
 .hero-quote b { color: var(--gold); font-style: normal; }
 .hero-pills { margin-top: 1.6rem; display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; }
 .pill {
-  font-family: "Cinzel", serif; font-size: 0.64rem; font-weight: 700; letter-spacing: 0.18em;
+  font-family: var(--font-cinzel), "Cinzel", serif; font-size: 0.64rem; font-weight: 700; letter-spacing: 0.18em;
   padding: 0.35rem 0.9rem; border-radius: 30px; text-transform: uppercase;
   border: 1px solid rgba(245, 197, 66, 0.5); color: var(--gold-soft);
   background: rgba(245, 197, 66, 0.08); backdrop-filter: blur(6px);
@@ -144,12 +144,12 @@ section.block { max-width: 1180px; margin: 0 auto; padding: 5rem 1.4rem 2rem; }
 }
 .dtitle {
   margin: 0;
-  font-family: "Pirata One", cursive; font-weight: 400; font-size: clamp(2rem, 5vw, 3rem);
+  font-family: var(--font-pirata), "Pirata One", cursive; font-weight: 400; font-size: clamp(2rem, 5vw, 3rem);
   color: var(--gold); letter-spacing: 0.04em; white-space: nowrap; text-align: center;
   filter: drop-shadow(0 0 14px rgba(245, 197, 66, 0.35));
 }
 .dsub {
-  display: block; text-align: center; font-family: "Cinzel", serif;
+  display: block; text-align: center; font-family: var(--font-cinzel), "Cinzel", serif;
   font-size: 0.68rem; letter-spacing: 0.35em; color: var(--blue);
   text-transform: uppercase; margin-bottom: 2.2rem;
 }
@@ -178,12 +178,12 @@ section.block { max-width: 1180px; margin: 0 auto; padding: 5rem 1.4rem 2rem; }
 }
 .wanted:hover::after { opacity: 1; }
 .wanted:hover { box-shadow: 0 30px 60px rgba(0, 0, 0, 0.65), 0 0 38px rgba(245, 197, 66, 0.35), inset 0 0 46px rgba(120, 85, 35, 0.28); }
-.wtop { font-family: "Cinzel", serif; font-weight: 900; font-size: 1.5rem; letter-spacing: 0.16em; border-bottom: 2px solid rgba(80, 55, 20, 0.55); padding-bottom: 0.15rem; }
+.wtop { font-family: var(--font-cinzel), "Cinzel", serif; font-weight: 900; font-size: 1.5rem; letter-spacing: 0.16em; border-bottom: 2px solid rgba(80, 55, 20, 0.55); padding-bottom: 0.15rem; }
 .wface { font-size: 3.4rem; line-height: 1; margin: 0.5rem 0 0.25rem; display: flex; justify-content: center; align-items: center; min-height: 64px; transform: translateZ(30px); }
-.wdead { font-family: "Cinzel", serif; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.3em; opacity: 0.85; }
-.wname { font-family: "Pirata One", cursive; font-weight: 400; font-size: 1.45rem; color: #4a2c08; line-height: 1.05; margin-top: 0.15rem; }
+.wdead { font-family: var(--font-cinzel), "Cinzel", serif; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.3em; opacity: 0.85; }
+.wname { font-family: var(--font-pirata), "Pirata One", cursive; font-weight: 400; font-size: 1.45rem; color: #4a2c08; line-height: 1.05; margin-top: 0.15rem; }
 .wrole { font-size: 0.85rem; font-style: italic; opacity: 0.85; min-height: 2.1em; line-height: 1.2; }
-.wbounty { font-family: "Cinzel", serif; font-weight: 900; font-size: 1rem; margin-top: 0.35rem; color: #5a3408; }
+.wbounty { font-family: var(--font-cinzel), "Cinzel", serif; font-weight: 900; font-size: 1rem; margin-top: 0.35rem; color: #5a3408; }
 .wbounty small { display: block; font-size: 0.56rem; letter-spacing: 0.28em; font-weight: 700; opacity: 0.75; }
 .wfruit {
   margin-top: 0.45rem; font-size: 0.76rem; display: inline-block; padding: 0.14rem 0.6rem;
@@ -194,7 +194,9 @@ section.block { max-width: 1180px; margin: 0 auto; padding: 5rem 1.4rem 2rem; }
 .fruit-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.3rem; }
 .flip { perspective: 1100px; min-height: 320px; }
 .flip-inner { position: relative; width: 100%; height: 100%; min-height: 320px; transform-style: preserve-3d; transition: transform 0.75s cubic-bezier(0.3, 0.8, 0.3, 1); }
-.flip:hover .flip-inner { transform: rotateY(180deg); }
+.flip { cursor: pointer; }
+@media (hover: hover) { .flip:hover .flip-inner { transform: rotateY(180deg); } }
+.flip.flipped .flip-inner { transform: rotateY(180deg); } /* táctil y teclado */
 .flip-face {
   position: absolute; inset: 0; border-radius: 18px; padding: 1.6rem 1.4rem;
   backface-visibility: hidden; -webkit-backface-visibility: hidden;
@@ -210,10 +212,10 @@ section.block { max-width: 1180px; margin: 0 auto; padding: 5rem 1.4rem 2rem; }
 }
 .flip-face.back { transform: rotateY(180deg); border-color: rgba(245, 197, 66, 0.55); background: linear-gradient(160deg, rgba(38, 28, 8, 0.95), rgba(20, 14, 4, 0.97)); }
 .flip-emoji { font-size: 3.4rem; margin-bottom: 0.5rem; animation: floaty 4s ease-in-out infinite; }
-.ftype { font-family: "Cinzel", serif; font-size: 0.62rem; letter-spacing: 0.32em; color: var(--blue); text-transform: uppercase; }
-.fname { font-family: "Pirata One", cursive; font-weight: 400; font-size: 1.9rem; color: var(--gold); margin: 0.3rem 0 0.4rem; }
+.ftype { font-family: var(--font-cinzel), "Cinzel", serif; font-size: 0.62rem; letter-spacing: 0.32em; color: var(--blue); text-transform: uppercase; }
+.fname { font-family: var(--font-pirata), "Pirata One", cursive; font-weight: 400; font-size: 1.9rem; color: var(--gold); margin: 0.3rem 0 0.4rem; }
 .flip-face p { color: var(--txt-dim); font-size: 0.98rem; line-height: 1.55; }
-.fhint { margin-top: 0.9rem; font-size: 0.72rem; color: rgba(159, 198, 239, 0.65); letter-spacing: 0.12em; font-family: "Cinzel", serif; }
+.fhint { margin-top: 0.9rem; font-size: 0.72rem; color: rgba(159, 198, 239, 0.65); letter-spacing: 0.12em; font-family: var(--font-cinzel), "Cinzel", serif; }
 .flip-face.back .fname { color: var(--gold-soft); }
 .flip-face.back p b { color: var(--gold-soft); }
 
@@ -225,7 +227,7 @@ section.block { max-width: 1180px; margin: 0 auto; padding: 5rem 1.4rem 2rem; }
   transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 .panel:hover { border-color: rgba(245, 197, 66, 0.55); box-shadow: 0 22px 46px rgba(0, 0, 0, 0.6), 0 0 26px rgba(245, 197, 66, 0.16); }
-.panel h3 { font-family: "Pirata One", cursive; font-weight: 400; font-size: 1.55rem; color: var(--gold); margin: 0.3rem 0 0.3rem; }
+.panel h3 { font-family: var(--font-pirata), "Pirata One", cursive; font-weight: 400; font-size: 1.55rem; color: var(--gold); margin: 0.3rem 0 0.3rem; }
 .panel p { color: var(--txt-dim); font-size: 0.98rem; line-height: 1.55; }
 
 /* ---------- sagas timeline ---------- */
@@ -241,13 +243,13 @@ section.block { max-width: 1180px; margin: 0 auto; padding: 5rem 1.4rem 2rem; }
   content: ""; position: absolute; left: -1.72rem; top: 0.42rem; width: 13px; height: 13px; border-radius: 50%;
   background: var(--gold); border: 3px solid var(--ink2); box-shadow: 0 0 12px rgba(245, 197, 66, 0.8);
 }
-.tl-item h3 { font-family: "Pirata One", cursive; font-weight: 400; font-size: 1.4rem; color: var(--gold-soft); margin: 0; }
-.tlmeta { font-family: "Cinzel", serif; font-size: 0.6rem; letter-spacing: 0.26em; color: #7fa8d4; text-transform: uppercase; }
+.tl-item h3 { font-family: var(--font-pirata), "Pirata One", cursive; font-weight: 400; font-size: 1.4rem; color: var(--gold-soft); margin: 0; }
+.tlmeta { font-family: var(--font-cinzel), "Cinzel", serif; font-size: 0.6rem; letter-spacing: 0.26em; color: #7fa8d4; text-transform: uppercase; }
 .tl-item p { color: var(--txt-dim); margin-top: 0.25rem; font-size: 0.97rem; line-height: 1.5; }
 .side-stack { display: flex; flex-direction: column; gap: 1.1rem; position: sticky; top: 90px; }
 .side-stack .panel { text-align: center; }
 .logpose { display: inline-block; animation: spinSlow 14s linear infinite; font-size: 2.1rem; }
-.bignum { font-family: "Pirata One", cursive; font-size: 1.7rem; color: var(--gold-soft); }
+.bignum { font-family: var(--font-pirata), "Pirata One", cursive; font-size: 1.7rem; color: var(--gold-soft); }
 
 /* ---------- anime: carrusel horizontal ---------- */
 .anime-stats { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 2.2rem; }
@@ -265,10 +267,10 @@ section.block { max-width: 1180px; margin: 0 auto; padding: 5rem 1.4rem 2rem; }
 }
 .astat:hover { transform: translateY(-7px) scale(1.05); box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6), 0 0 26px rgba(245, 197, 66, 0.3); }
 .astat .semoji { font-size: 1.5rem; display: block; margin-bottom: 0.2rem; }
-.astat .snum { font-family: "Pirata One", cursive; font-size: 2.3rem; color: var(--gold); line-height: 1.05; filter: drop-shadow(0 0 12px rgba(245, 197, 66, 0.5)); }
-.astat .slab { font-family: "Cinzel", serif; font-size: 0.58rem; letter-spacing: 0.22em; color: var(--blue); margin-top: 0.4rem; text-transform: uppercase; }
+.astat .snum { font-family: var(--font-pirata), "Pirata One", cursive; font-size: 2.3rem; color: var(--gold); line-height: 1.05; filter: drop-shadow(0 0 12px rgba(245, 197, 66, 0.5)); }
+.astat .slab { font-family: var(--font-cinzel), "Cinzel", serif; font-size: 0.58rem; letter-spacing: 0.22em; color: var(--blue); margin-top: 0.4rem; text-transform: uppercase; }
 
-.rail-hint { text-align: center; font-family: "Cinzel", serif; font-size: 0.62rem; letter-spacing: 0.3em; color: rgba(159, 198, 239, 0.7); text-transform: uppercase; margin-bottom: 0.9rem; }
+.rail-hint { text-align: center; font-family: var(--font-cinzel), "Cinzel", serif; font-size: 0.62rem; letter-spacing: 0.3em; color: rgba(159, 198, 239, 0.7); text-transform: uppercase; margin-bottom: 0.9rem; }
 .anime-rail {
   display: flex; gap: 1.1rem; overflow-x: auto; padding: 0.6rem 0.2rem 1.4rem;
   scroll-snap-type: x mandatory; cursor: grab;
@@ -287,7 +289,7 @@ section.block { max-width: 1180px; margin: 0 auto; padding: 5rem 1.4rem 2rem; }
 .acard:hover { transform: translateY(-8px); border-color: rgba(245, 197, 66, 0.6); }
 .acard .ayear {
   position: absolute; right: 0.6rem; top: 0.1rem;
-  font-family: "Pirata One", cursive; font-size: 4.4rem; color: rgba(245, 197, 66, 0.09);
+  font-family: var(--font-pirata), "Pirata One", cursive; font-size: 4.4rem; color: rgba(245, 197, 66, 0.09);
   pointer-events: none; line-height: 1;
 }
 .acard .abadge {
@@ -297,14 +299,14 @@ section.block { max-width: 1180px; margin: 0 auto; padding: 5rem 1.4rem 2rem; }
   border: 3px solid #8a5a12; box-shadow: 0 0 22px rgba(245, 197, 66, 0.6);
   margin-bottom: 0.7rem;
 }
-.acard .ayearlab { font-family: "Cinzel", serif; font-size: 0.62rem; letter-spacing: 0.3em; color: var(--blue); }
-.acard h3 { font-family: "Pirata One", cursive; font-weight: 400; font-size: 1.45rem; color: var(--gold-soft); margin: 0.15rem 0 0.35rem; }
+.acard .ayearlab { font-family: var(--font-cinzel), "Cinzel", serif; font-size: 0.62rem; letter-spacing: 0.3em; color: var(--blue); }
+.acard h3 { font-family: var(--font-pirata), "Pirata One", cursive; font-weight: 400; font-size: 1.45rem; color: var(--gold-soft); margin: 0.15rem 0 0.35rem; }
 .acard p { color: var(--txt-dim); font-size: 0.92rem; line-height: 1.5; }
 
 /* ---------- recompensas ---------- */
 .bounty-panel { padding: 1.8rem 1.8rem 1.4rem; }
 .bounty-row { margin-bottom: 1.05rem; }
-.blabel { display: flex; justify-content: space-between; font-family: "Cinzel", serif; font-size: 0.82rem; color: #dce8f5; margin-bottom: 0.3rem; }
+.blabel { display: flex; justify-content: space-between; font-family: var(--font-cinzel), "Cinzel", serif; font-size: 0.82rem; color: #dce8f5; margin-bottom: 0.3rem; }
 .blabel b { color: var(--gold); font-variant-numeric: tabular-nums; }
 .btrack { height: 15px; background: rgba(255, 255, 255, 0.07); border-radius: 10px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.1); }
 .bfill {
@@ -318,7 +320,7 @@ section.block { max-width: 1180px; margin: 0 auto; padding: 5rem 1.4rem 2rem; }
 
 /* tu recompensa */
 .yourb { max-width: 620px; margin: 3rem auto 0; text-align: center; }
-.yourb h3 { font-family: "Cinzel", serif; font-size: 1rem; letter-spacing: 0.25em; color: var(--blue); margin-bottom: 1.2rem; }
+.yourb h3 { font-family: var(--font-cinzel), "Cinzel", serif; font-size: 1rem; letter-spacing: 0.25em; color: var(--blue); margin-bottom: 1.2rem; }
 input[type="range"].gold-slider {
   -webkit-appearance: none; appearance: none; width: 100%; height: 10px; border-radius: 8px;
   background: linear-gradient(90deg, rgba(245, 197, 66, 0.9) var(--fill, 40%), rgba(255, 255, 255, 0.1) var(--fill, 40%));
@@ -334,10 +336,10 @@ input[type="range"].gold-slider::-webkit-slider-thumb {
 /* ---------- quiz ---------- */
 .quiz-wrap { max-width: 680px; margin: 0 auto; }
 .qq { margin-bottom: 1.7rem; }
-.qq h3 { font-family: "Cinzel", serif; font-size: 0.95rem; font-weight: 700; color: var(--gold-soft); margin: 0 0 0.7rem; letter-spacing: 0.04em; }
+.qq h3 { font-family: var(--font-cinzel), "Cinzel", serif; font-size: 0.95rem; font-weight: 700; color: var(--gold-soft); margin: 0 0 0.7rem; letter-spacing: 0.04em; }
 .opts { display: flex; flex-direction: column; gap: 0.45rem; }
 .opt {
-  font-family: "Crimson Text", serif; font-size: 1rem; text-align: left;
+  font-family: var(--font-crimson), "Crimson Text", serif; font-size: 1rem; text-align: left;
   padding: 0.6rem 1rem; border-radius: 12px; cursor: pointer;
   color: var(--txt-dim); background: rgba(16, 38, 66, 0.6);
   border: 1px solid var(--line); transition: all 0.22s ease;
@@ -350,7 +352,7 @@ input[type="range"].gold-slider::-webkit-slider-thumb {
 }
 .btn-gold {
   display: block; width: 100%; margin-top: 0.5rem; padding: 0.85rem 1.6rem;
-  font-family: "Cinzel", serif; font-weight: 700; font-size: 0.9rem; letter-spacing: 0.14em;
+  font-family: var(--font-cinzel), "Cinzel", serif; font-weight: 700; font-size: 0.9rem; letter-spacing: 0.14em;
   color: #1c1002; background: linear-gradient(135deg, var(--gold), var(--amber));
   border: none; border-radius: 30px; cursor: pointer;
   box-shadow: 0 10px 26px rgba(224, 123, 57, 0.4); transition: all 0.25s ease;
@@ -359,8 +361,8 @@ input[type="range"].gold-slider::-webkit-slider-thumb {
 .quiz-result { margin-top: 1.6rem; text-align: center; border-color: rgba(245, 197, 66, 0.6); animation: popIn 0.5s ease both; }
 @keyframes popIn { 0% { opacity: 0; transform: scale(0.75); } 70% { transform: scale(1.05); } 100% { opacity: 1; transform: scale(1); } }
 .qr-icon { font-size: 3.2rem; }
-.qr-title { font-family: "Pirata One", cursive; font-weight: 400; font-size: 2.1rem; color: var(--gold); }
-.qr-score { font-family: "Cinzel", serif; letter-spacing: 0.22em; color: var(--gold-soft); font-size: 1.05rem; margin: 0.3rem 0; }
+.qr-title { font-family: var(--font-pirata), "Pirata One", cursive; font-weight: 400; font-size: 2.1rem; color: var(--gold); }
+.qr-score { font-family: var(--font-cinzel), "Cinzel", serif; letter-spacing: 0.22em; color: var(--gold-soft); font-size: 1.05rem; margin: 0.3rem 0; }
 
 /* ---------- footer ---------- */
 .footer {
@@ -369,7 +371,7 @@ input[type="range"].gold-slider::-webkit-slider-thumb {
   background: linear-gradient(180deg, rgba(10, 30, 56, 0.8), rgba(4, 11, 22, 0.98));
   border-top: 1px solid rgba(245, 197, 66, 0.2);
 }
-.fquote { font-family: "Pirata One", cursive; font-weight: 400; font-size: 2.1rem; color: var(--gold); filter: drop-shadow(0 0 14px rgba(245, 197, 66, 0.4)); }
+.fquote { font-family: var(--font-pirata), "Pirata One", cursive; font-weight: 400; font-size: 2.1rem; color: var(--gold); filter: drop-shadow(0 0 14px rgba(245, 197, 66, 0.4)); }
 .fsub { color: #9db8d8; font-style: italic; margin-top: 0.5rem; }
 .fnote { margin-top: 1.3rem; font-size: 0.75rem; color: #5f7fa2; letter-spacing: 0.08em; }
 
@@ -409,10 +411,10 @@ input[type="range"].gold-slider::-webkit-slider-thumb {
   position: absolute; left: 0; right: 0; bottom: 0; padding: 2.6rem 1rem 0.9rem;
   background: linear-gradient(180deg, transparent, rgba(4, 11, 22, 0.96));
 }
-.gal-item figcaption h3 { font-family: "Pirata One", cursive; font-weight: 400; font-size: 1.3rem; color: var(--gold); margin: 0.15rem 0 0; }
+.gal-item figcaption h3 { font-family: var(--font-pirata), "Pirata One", cursive; font-weight: 400; font-size: 1.3rem; color: var(--gold); margin: 0.15rem 0 0; }
 .gal-item figcaption p { color: var(--txt-dim); font-size: 0.88rem; line-height: 1.4; margin: 0; max-height: 0; opacity: 0; overflow: hidden; transition: all 0.4s ease; }
 .gal-item:hover figcaption p { max-height: 6rem; opacity: 1; margin-top: 0.3rem; }
-.gal-tag { font-family: "Cinzel", serif; font-size: 0.58rem; font-weight: 700; letter-spacing: 0.24em; text-transform: uppercase; color: var(--blue); }
+.gal-tag { font-family: var(--font-cinzel), "Cinzel", serif; font-size: 0.58rem; font-weight: 700; letter-spacing: 0.24em; text-transform: uppercase; color: var(--blue); }
 .gal-missing {
   display: none; position: absolute; inset: 0; align-items: center; justify-content: center; text-align: center;
   color: #7fa0c4; font-size: 0.85rem; padding: 1rem; line-height: 1.6;
@@ -433,7 +435,7 @@ input[type="range"].gold-slider::-webkit-slider-thumb {
 }
 .lb-inner img { width: 100%; max-height: 62vh; object-fit: contain; background: #000; }
 .lb-info { padding: 1rem 1.3rem 1.2rem; }
-.lb-info h3 { font-family: "Pirata One", cursive; font-weight: 400; font-size: 1.7rem; color: var(--gold); margin: 0.2rem 0 0.3rem; }
+.lb-info h3 { font-family: var(--font-pirata), "Pirata One", cursive; font-weight: 400; font-size: 1.7rem; color: var(--gold); margin: 0.2rem 0 0.3rem; }
 .lb-info p { color: var(--txt-dim); line-height: 1.5; margin: 0; }
 .lb-close {
   position: absolute; top: 0.6rem; right: 0.6rem; z-index: 2; width: 36px; height: 36px; border-radius: 50%; cursor: pointer;
@@ -456,12 +458,12 @@ input[type="range"].gold-slider::-webkit-slider-thumb {
 .video-frame { position: relative; aspect-ratio: 16 / 9; background: #000; }
 .video-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 .video-meta { padding: 0.9rem 1.1rem 1.1rem; }
-.video-tag { font-family: "Cinzel", serif; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.24em; text-transform: uppercase; color: var(--blue); }
-.video-meta h3 { font-family: "Pirata One", cursive; font-weight: 400; font-size: 1.45rem; color: var(--gold); margin: 0.25rem 0 0.2rem; }
+.video-tag { font-family: var(--font-cinzel), "Cinzel", serif; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.24em; text-transform: uppercase; color: var(--blue); }
+.video-meta h3 { font-family: var(--font-pirata), "Pirata One", cursive; font-weight: 400; font-size: 1.45rem; color: var(--gold); margin: 0.25rem 0 0.2rem; }
 .video-meta p { color: var(--txt-dim); font-size: 0.95rem; line-height: 1.45; margin: 0; }
 
 /* ---------- enlaces oficiales del footer ---------- */
-.flinks { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.4rem 1.1rem; margin-top: 1.2rem; font-family: "Cinzel", serif; font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; }
+.flinks { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.4rem 1.1rem; margin-top: 1.2rem; font-family: var(--font-cinzel), "Cinzel", serif; font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; }
 .flinks span { color: #5f7fa2; }
 .flinks a { color: var(--gold-soft); text-decoration: none; border-bottom: 1px solid transparent; transition: all 0.2s ease; }
 .flinks a:hover { color: var(--gold); border-bottom-color: var(--gold); }
@@ -472,7 +474,7 @@ input[type="range"].gold-slider::-webkit-slider-thumb {
   display: flex; align-items: center; gap: 0.55rem;
   padding: 0.7rem 1.15rem; border: 1px solid rgba(245, 197, 66, 0.55); border-radius: 40px;
   background: linear-gradient(135deg, rgba(22, 48, 84, 0.96), rgba(10, 25, 48, 0.98));
-  color: var(--gold-soft); font-family: "Cinzel", serif; font-weight: 700;
+  color: var(--gold-soft); font-family: var(--font-cinzel), "Cinzel", serif; font-weight: 700;
   font-size: 0.78rem; letter-spacing: 0.1em; cursor: pointer;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55), 0 0 22px rgba(245, 197, 66, 0.25);
   transition: all 0.25s ease; animation: fabPulse 3.2s ease-in-out infinite;
@@ -499,9 +501,9 @@ input[type="range"].gold-slider::-webkit-slider-thumb {
   padding: 0.8rem 1rem; border-bottom: 1px solid rgba(245, 197, 66, 0.25);
   background: linear-gradient(90deg, rgba(245, 197, 66, 0.1), transparent);
 }
-.chat-title { font-family: "Pirata One", cursive; font-size: 1.25rem; color: var(--gold); }
+.chat-title { font-family: var(--font-pirata), "Pirata One", cursive; font-size: 1.25rem; color: var(--gold); }
 .chat-ia {
-  font-family: "Cinzel", serif; font-size: 0.55rem; font-weight: 700; letter-spacing: 0.2em;
+  font-family: var(--font-cinzel), "Cinzel", serif; font-size: 0.55rem; font-weight: 700; letter-spacing: 0.2em;
   vertical-align: middle; margin-left: 0.4rem; padding: 0.18rem 0.55rem;
   border: 1px solid rgba(245, 197, 66, 0.5); border-radius: 20px; color: var(--gold-soft);
 }
@@ -513,7 +515,7 @@ input[type="range"].gold-slider::-webkit-slider-thumb {
 .chat-chars { display: flex; gap: 0.4rem; padding: 0.6rem 0.9rem; border-bottom: 1px solid var(--line); }
 .chip {
   flex: 1; padding: 0.42rem 0.5rem; border-radius: 20px; cursor: pointer;
-  font-family: "Cinzel", serif; font-weight: 700; font-size: 0.7rem; letter-spacing: 0.05em;
+  font-family: var(--font-cinzel), "Cinzel", serif; font-weight: 700; font-size: 0.7rem; letter-spacing: 0.05em;
   color: var(--txt-dim); background: rgba(16, 38, 66, 0.6); border: 1px solid var(--line);
   transition: all 0.22s ease;
 }
@@ -557,7 +559,7 @@ input[type="range"].gold-slider::-webkit-slider-thumb {
 }
 .chat-input input {
   flex: 1; padding: 0.6rem 0.9rem; border-radius: 22px;
-  font-family: "Crimson Text", serif; font-size: 0.95rem;
+  font-family: var(--font-crimson), "Crimson Text", serif; font-size: 0.95rem;
   color: var(--txt); background: rgba(16, 38, 66, 0.7); border: 1px solid var(--line);
   outline: none; transition: border-color 0.2s ease;
 }
@@ -570,11 +572,59 @@ input[type="range"].gold-slider::-webkit-slider-thumb {
 .chat-send:hover:not(:disabled) { transform: scale(1.08); }
 .chat-send:disabled { opacity: 0.55; cursor: wait; }
 
+/* ---------- menú móvil (hamburguesa) ---------- */
+.nav-toggle {
+  display: none; width: 44px; height: 44px; cursor: pointer;
+  flex-direction: column; align-items: center; justify-content: center; gap: 5px;
+  border: 1px solid rgba(245, 197, 66, 0.45); border-radius: 10px; background: rgba(5, 13, 26, 0.6);
+}
+.nav-toggle span { display: block; width: 20px; height: 2px; background: var(--gold); border-radius: 2px; transition: transform 0.25s ease, opacity 0.25s ease; }
+.nav.open .nav-toggle span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav.open .nav-toggle span:nth-child(2) { opacity: 0; }
+.nav.open .nav-toggle span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ---------- accesibilidad: foco visible ---------- */
+:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; border-radius: 6px; }
+.nav-links a:focus-visible, .flinks a:focus-visible { outline-offset: 5px; }
+.gal-item:focus-visible, .flip:focus-visible, .wanted:focus-visible { outline: 3px solid var(--gold-soft); outline-offset: 4px; }
+.gold-slider:focus-visible { outline: 3px solid var(--gold); outline-offset: 6px; }
+.chat-input input:focus-visible { outline: 2px solid var(--gold); outline-offset: 0; }
+
 /* ---------- responsive ---------- */
 @media (max-width: 900px) {
-  .nav-links { display: none; }
+  .nav-toggle { display: flex; }
+  .nav-links {
+    position: absolute; top: 100%; left: 0; right: 0; display: none;
+    flex-direction: column; gap: 0; padding: 0.4rem 0 0.8rem;
+    background: rgba(5, 13, 26, 0.96); border-bottom: 1px solid rgba(245, 197, 66, 0.25);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  }
+  .nav.open .nav-links { display: flex; }
+  .nav-links li a { display: block; padding: 0.8rem 2rem; font-size: 0.8rem; }
+  .nav-links a::after { display: none; }
   .sagas-wrap { grid-template-columns: 1fr; }
   .side-stack { position: static; }
   .fab-label { display: none; }
   .chat-fab { padding: 0.85rem; }
+}
+@media (max-width: 600px) {
+  .nav { padding: 0.6rem 1rem; }
+  section.block { padding: 3.5rem 1rem 1.5rem; }
+  .crew-grid { grid-template-columns: repeat(2, 1fr); }
+  .video-grid { grid-template-columns: 1fr; }
+  .hero-quote { font-size: 1rem; }
+  .anime-stats { gap: 0.6rem; }
+}
+
+/* ---------- accesibilidad: movimiento reducido ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .particles, .aurora, .hero-video { display: none; }
+  .reveal { opacity: 1; transform: none; }
+  body { background: var(--ink2); }
 }

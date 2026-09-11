@@ -22,7 +22,7 @@ El chat usa un backend en Python ([api/index.py](api/index.py)) que funciona con
 
 | Variable de entorno | Proveedor | Modelo | Costo |
 |---|---|---|---|
-| `GEMINI_API_KEY` | Google Gemini | `gemini-2.5-flash` | Capa gratuita ([aistudio.google.com](https://aistudio.google.com/apikey)) |
+| `GEMINI_API_KEY` | Google Gemini | `gemini-3.6-flash` (configurable con `GEMINI_MODEL`) | Capa gratuita ([aistudio.google.com](https://aistudio.google.com/apikey)) |
 | `ANTHROPIC_API_KEY` | API de Claude | `claude-opus-5` | De pago ([console.anthropic.com](https://console.anthropic.com)) |
 
 La clave vive **solo en el servidor**, nunca llega al navegador.

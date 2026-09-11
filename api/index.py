@@ -12,8 +12,10 @@ En local:
 En Vercel se despliega automáticamente como función serverless (carpeta api/).
 """
 import os
+import time
+from collections import deque
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
@@ -129,8 +131,28 @@ def _chat_claude(system: str, historial: list[dict]) -> str:
     return "".join(b.text for b in resp.content if b.type == "text")
 
 
+# ---- Límite sencillo por IP (en memoria, por instancia): evita que alguien agote la cuota de la API
+LIMITE_PETICIONES = 20      # peticiones…
+VENTANA_SEGUNDOS = 300      # …cada 5 minutos
+_llamadas: dict[str, deque] = {}
+
+
+def _limitar_por_ip(ip: str) -> None:
+    ahora = time.time()
+    cola = _llamadas.setdefault(ip, deque())
+    while cola and ahora - cola[0] > VENTANA_SEGUNDOS:
+        cola.popleft()
+    if len(cola) >= LIMITE_PETICIONES:
+        raise HTTPException(429, "Demasiadas preguntas seguidas, nakama. Espera unos minutos.")
+    cola.append(ahora)
+    if len(_llamadas) > 5000:  # no crecer sin límite
+        _llamadas.clear()
+
+
 @app.post("/api/py/chat")
-def chat(body: ChatIn):
+def chat(body: ChatIn, request: Request):
+    ip = request.headers.get("x-forwarded-for", "") or (request.client.host if request.client else "?")
+    _limitar_por_ip(ip.split(",")[0].strip())
     p = PERSONAJES.get(body.personaje)
     if p is None:
         raise HTTPException(400, f"Personaje desconocido: {body.personaje}")
@@ -143,7 +165,8 @@ def chat(body: ChatIn):
         try:
             texto = _chat_gemini(p["system"], historial)
         except Exception as e:  # la API de Gemini lanza errores propios variados
-            raise HTTPException(502, f"Error de Gemini: {str(e)[:180]}")
+            print(f"[gemini] {type(e).__name__}: {e}")  # queda en los logs del servidor, no en el cliente
+            raise HTTPException(502, "La IA no pudo responder en este momento. Inténtalo de nuevo en unos segundos.")
     elif os.environ.get("ANTHROPIC_API_KEY"):
         proveedor = "claude"
         import anthropic

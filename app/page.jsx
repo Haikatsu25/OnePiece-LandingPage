@@ -28,10 +28,30 @@ function Particles() {
   const ref = useRef(null);
   useEffect(() => {
     const canvas = ref.current;
+    if (!canvas || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return; // sin partículas si el usuario reduce el movimiento
     const ctx = canvas.getContext("2d");
     let w, h, raf;
     const dots = [];
-    const resize = () => { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; };
+    // Escala por devicePixelRatio para que no se vean borrosas en pantallas retina
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const resize = () => {
+      w = window.innerWidth; h = window.innerHeight;
+      canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
+      canvas.style.width = `${w}px`; canvas.style.height = `${h}px`;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+    // Halo pre-renderizado (gradiente radial) en un canvas offscreen: mismo brillo que shadowBlur, casi gratis
+    const sprite = (r, g, b) => {
+      const c = document.createElement("canvas"); c.width = c.height = 32;
+      const x = c.getContext("2d");
+      const grd = x.createRadialGradient(16, 16, 0, 16, 16, 16);
+      grd.addColorStop(0, `rgba(${r},${g},${b},1)`);
+      grd.addColorStop(0.35, `rgba(${r},${g},${b},0.5)`);
+      grd.addColorStop(1, `rgba(${r},${g},${b},0)`);
+      x.fillStyle = grd; x.fillRect(0, 0, 32, 32);
+      return c;
+    };
+    const goldSprite = sprite(245, 197, 66), blueSprite = sprite(159, 198, 239);
     resize();
     window.addEventListener("resize", resize);
     for (let i = 0; i < 70; i++) {
@@ -48,27 +68,24 @@ function Particles() {
         p.x += Math.sin(t * 0.0006 + p.ph) * 0.35;
         if (p.y < -12) { p.y = h + 12; p.x = Math.random() * w; }
         const glow = 0.5 + 0.5 * Math.sin(t * 0.002 + p.ph);
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, 7);
-        ctx.fillStyle = p.gold
-          ? `rgba(245, 197, 66, ${p.o * glow})`
-          : `rgba(159, 198, 239, ${p.o * glow * 0.8})`;
-        ctx.shadowBlur = 8; ctx.shadowColor = p.gold ? "#f5c542" : "#9fc6ef";
-        ctx.fill();
-        ctx.shadowBlur = 0;
+        const size = p.r * 6; // el sprite incluye el halo
+        ctx.globalAlpha = p.o * glow * (p.gold ? 1 : 0.8);
+        ctx.drawImage(p.gold ? goldSprite : blueSprite, p.x - size / 2, p.y - size / 2, size, size);
       }
+      ctx.globalAlpha = 1;
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
     return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", resize); };
   }, []);
-  return <canvas ref={ref} className="particles" />;
+  return <canvas ref={ref} className="particles" aria-hidden="true" />;
 }
 
 /* ================= barra de progreso + navbar ================= */
 function NavBar() {
   const barRef = useRef(null);
   const [scrolled, setScrolled] = useState(false);
+  const [open, setOpen] = useState(false); // menú móvil
   useEffect(() => {
     const onScroll = () => {
       const max = document.documentElement.scrollHeight - window.innerHeight;
@@ -82,9 +99,16 @@ function NavBar() {
   return (
     <>
       <div className="progress" ref={barRef} />
-      <nav className={`nav ${scrolled ? "scrolled" : ""}`}>
+      <nav className={`nav ${scrolled ? "scrolled" : ""} ${open ? "open" : ""}`} aria-label="Navegación principal">
         <a className="nav-brand" href="#top"><StrawHat width={38} uid="nav" /> Grand Line</a>
-        <ul className="nav-links">
+        <button
+          className="nav-toggle" type="button"
+          aria-label={open ? "Cerrar menú" : "Abrir menú"} aria-expanded={open} aria-controls="nav-menu"
+          onClick={() => setOpen((o) => !o)}
+        >
+          <span /><span /><span />
+        </button>
+        <ul className="nav-links" id="nav-menu" onClick={() => setOpen(false)}>
           <li><a href="#tripulacion">Tripulación</a></li>
           <li><a href="#frutas">Frutas</a></li>
           <li><a href="#sagas">Sagas</a></li>
@@ -185,6 +209,7 @@ function BountyBar({ name, value, max }) {
 
 /* ================= confeti ================= */
 function fireConfetti() {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   const canvas = document.createElement("canvas");
   canvas.style.cssText = "position:fixed;inset:0;pointer-events:none;z-index:100;";
   document.body.appendChild(canvas);
@@ -219,7 +244,6 @@ function fireConfetti() {
 /* ================= chat con IA (backend Python: Gemini o Claude) ================= */
 // Rutas relativas: en Vercel el backend Python vive en el mismo dominio (api/index.py);
 // en desarrollo, next.config.mjs redirige /api/py/* al FastAPI local en :8000.
-const API_URL = "";
 const CHAT_CHARS = [
   { id: "luffy", nombre: "Luffy", emoji: "👒" },
   { id: "chopper", nombre: "Chopper", emoji: "🦌" },
@@ -263,7 +287,7 @@ function ChatNakama() {
     while (hist.length && hist[0].role !== "user") hist.shift();
 
     try {
-      const res = await fetch(`${API_URL}/api/py/chat`, {
+      const res = await fetch("/api/py/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ personaje: who, mensajes: hist }),
@@ -369,9 +393,11 @@ function HeroVideo({ id, start = 4 }) {
         document.head.appendChild(s);
       }
     }
-    // Vigía: si por cualquier motivo el video no está reproduciendo, lo reanuda.
+    // Vigía: si el video se detuvo (StrictMode, buffering), lo reanuda. Solo actúa con la pestaña visible;
+    // el usuario no puede pausarlo (pointer-events: none), así que nunca contradice una pausa voluntaria.
     const watchdog = setInterval(() => {
       try {
+        if (document.hidden) return;
         if (player && typeof player.getPlayerState === "function") {
           const st = player.getPlayerState();
           if (st === 2 || st === 5 || st === -1) { player.mute(); player.playVideo(); }
@@ -539,13 +565,22 @@ export default function Page() {
 
   const maxBounty = BOUNTIES[0][1];
 
-  /* galería (lightbox) */
+  /* galería (lightbox): abre con foco en "cerrar", atrapa el Tab y devuelve el foco al cerrar */
   const [foto, setFoto] = useState(null);
+  const lbClose = useRef(null);
+  const lastFocus = useRef(null);
+  const abrirFoto = (g) => { lastFocus.current = document.activeElement; setFoto(g); };
+  const cerrarFoto = useCallback(() => {
+    setFoto(null);
+    const el = lastFocus.current;
+    if (el && typeof el.focus === "function") el.focus();
+  }, []);
   useEffect(() => {
-    const onKey = (e) => e.key === "Escape" && setFoto(null);
+    const onKey = (e) => e.key === "Escape" && cerrarFoto();
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, []);
+  }, [cerrarFoto]);
+  useEffect(() => { if (foto && lbClose.current) lbClose.current.focus(); }, [foto]);
 
   return (
     <main id="top">
@@ -620,19 +655,24 @@ export default function Page() {
         <div className="reveal">
           <div className="divider"><h2 className="dtitle">Frutas del Diablo</h2></div>
           <span className="dsub">Akuma no Mi · El poder del mar tiene un precio</span>
-          <p className="intro">Pasa el cursor sobre cada carta para voltearla y descubrir sus secretos. 🍈</p>
+          <p className="intro">Pasa el cursor (o toca) cada carta para voltearla y descubrir sus secretos. 🍈</p>
         </div>
         <div className="fruit-grid">
           {FRUITS.map((f, i) => (
             <div className="reveal" style={{ transitionDelay: `${i * 0.12}s` }} key={f.name}>
-              <div className="flip">
+              <div
+                className="flip" role="button" tabIndex={0}
+                aria-label={`Voltear la carta de ${f.name}`}
+                onClick={(e) => e.currentTarget.classList.toggle("flipped")}
+                onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); e.currentTarget.classList.toggle("flipped"); } }}
+              >
                 <div className="flip-inner">
                   <div className="flip-face front">
                     <div className="flip-emoji">{f.emoji}</div>
                     <div className="ftype">{f.type}</div>
                     <div className="fname">{f.name}</div>
                     <p>{f.front}</p>
-                    <div className="fhint">— PASA EL CURSOR PARA GIRAR —</div>
+                    <div className="fhint">— PASA EL CURSOR O TOCA PARA GIRAR —</div>
                   </div>
                   <div className="flip-face back">
                     <div className="fname">{f.name}</div>
@@ -749,7 +789,10 @@ export default function Page() {
               className={`gal-item reveal ${g.span || ""}`}
               style={{ transitionDelay: `${(i % 3) * 0.08}s` }}
               key={g.src}
-              onClick={() => setFoto(g)}
+              role="button" tabIndex={0}
+              aria-label={`Ver en grande: ${g.title}`}
+              onClick={() => abrirFoto(g)}
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); abrirFoto(g); } }}
             >
               <img
                 src={g.src} alt={g.alt} loading="lazy"
@@ -816,6 +859,7 @@ export default function Page() {
           <h3>⚖️ ¿CUÁNTO VALDRÍA TU CABEZA?</h3>
           <input
             type="range" min="0" max="100" value={danger} className="gold-slider"
+            aria-label="Nivel de amenaza al Gobierno Mundial"
             style={{ "--fill": `${danger}%` }}
             onChange={(e) => setDanger(Number(e.target.value))}
           />
@@ -879,9 +923,13 @@ export default function Page() {
 
       {/* ===== LIGHTBOX DE LA GALERÍA ===== */}
       {foto && (
-        <div className="lightbox" onClick={() => setFoto(null)} role="dialog" aria-modal="true">
+        <div
+          className="lightbox" role="dialog" aria-modal="true" aria-label={foto.title}
+          onClick={cerrarFoto}
+          onKeyDown={(e) => { if (e.key === "Tab") { e.preventDefault(); lbClose.current && lbClose.current.focus(); } }}
+        >
           <div className="lb-inner" onClick={(e) => e.stopPropagation()}>
-            <button className="lb-close" onClick={() => setFoto(null)} aria-label="Cerrar">✕</button>
+            <button className="lb-close" ref={lbClose} onClick={cerrarFoto} aria-label="Cerrar">✕</button>
             <img src={foto.src} alt={foto.alt} />
             <div className="lb-info">
               <span className="gal-tag">{foto.tag}</span>
