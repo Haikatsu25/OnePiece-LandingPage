@@ -179,6 +179,8 @@ def _pirata_gemini(prompt: str) -> dict:
         return _json_de_texto(_texto_de(resp))
     except Exception as e:
         print(f"[pirata/gemini json-mode] {type(e).__name__}: {e}")
+        if getattr(e, "code", None) in (429, 401, 403):
+            raise  # cuota o credenciales: reintentar no ayuda
         resp = client.models.generate_content(
             model=modelo, contents=contents,
             config=types.GenerateContentConfig(system_instruction=PIRATA_SYSTEM, max_output_tokens=4096),
@@ -293,7 +295,10 @@ def pirata(body: PirataIn, request: Request):
         raise
     except Exception as e:
         print(f"[pirata/{type(e).__name__}] {e}")
-        raise HTTPException(502, f"La IA no pudo generar tu identidad en este momento ({type(e).__name__}). Inténtalo de nuevo.")
+        codigo = getattr(e, "code", None)
+        if codigo == 429:
+            raise HTTPException(429, "La cuota gratuita de la IA se agotó por un momento. Espera un minuto e inténtalo de nuevo.")
+        raise HTTPException(502, f"La IA no pudo generar tu identidad en este momento ({type(e).__name__} {codigo or ''}). Inténtalo de nuevo.")
 
     # Saneado: claves esperadas, tipos correctos y recompensa dentro de rango
     try:
