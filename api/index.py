@@ -2,7 +2,7 @@
 """Grand Line API — backend en Python (FastAPI) con IA.
 
 Funciona con dos proveedores (usa el primero cuya clave exista):
-  · GEMINI_API_KEY     → Google Gemini (gemini-3.6-flash por defecto, configurable con GEMINI_MODEL)
+  · GEMINI_API_KEY     → Google Gemini (modelos en cascada, ver MODELOS_GEMINI; configurable con GEMINI_MODELS)
   · ANTHROPIC_API_KEY  → API de Claude (claude-opus-5)
 
 En local:
@@ -117,23 +117,43 @@ def personajes():
     return {k: {"nombre": v["nombre"], "emoji": v["emoji"]} for k, v in PERSONAJES.items()}
 
 
-def _chat_gemini(system: str, historial: list[dict]) -> str:
+# ---- Modelos de Gemini en cascada: si uno agota su cuota gratuita (429) o no existe (404), se prueba el siguiente.
+#      Gemini 3.6 Flash da ~20 peticiones/día gratis; los Flash-Lite, ~500/día. Configurable con GEMINI_MODELS="a,b,c".
+MODELOS_GEMINI = ["gemini-3.6-flash", "gemini-3.5-flash-lite", "gemini-3.1-flash-lite", "gemini-2.5-flash-lite"]
+
+
+def _modelos_gemini() -> list[str]:
+    env = os.environ.get("GEMINI_MODELS") or os.environ.get("GEMINI_MODEL")
+    return [m.strip() for m in env.split(",") if m.strip()] if env else MODELOS_GEMINI
+
+
+def _generar_gemini(contents, **cfg):
+    """generate_content probando los modelos en orden; devuelve la primera respuesta válida."""
     from google import genai
     from google.genai import types
 
     client = genai.Client()  # lee GEMINI_API_KEY del entorno
+    ultimo = None
+    for modelo in _modelos_gemini():
+        try:
+            return client.models.generate_content(
+                model=modelo, contents=contents, config=types.GenerateContentConfig(**cfg),
+            )
+        except Exception as e:
+            ultimo = e
+            print(f"[gemini/{modelo}] {type(e).__name__}: {e}")
+            if getattr(e, "code", None) in (400, 404, 429, 503):
+                continue  # cuota agotada, modelo no disponible o no admite la opción → siguiente modelo
+            raise
+    raise ultimo
+
+
+def _chat_gemini(system: str, historial: list[dict]) -> str:
     contents = [
         {"role": "user" if m["role"] == "user" else "model", "parts": [{"text": m["content"]}]}
         for m in historial
     ]
-    resp = client.models.generate_content(
-        model=os.environ.get("GEMINI_MODEL", "gemini-3.6-flash"),
-        contents=contents,
-        config=types.GenerateContentConfig(
-            system_instruction=system,
-            max_output_tokens=1024,
-        ),
-    )
+    resp = _generar_gemini(contents, system_instruction=system, max_output_tokens=1024)
     return resp.text or "…"
 
 
@@ -162,29 +182,17 @@ def _json_de_texto(texto: str) -> dict:
 
 
 def _pirata_gemini(prompt: str) -> dict:
-    from google import genai
-    from google.genai import types
-
-    client = genai.Client()
-    modelo = os.environ.get("GEMINI_MODEL", "gemini-3.6-flash")
     contents = [{"role": "user", "parts": [{"text": prompt}]}]
-    # 1) Salida estructurada nativa; 2) si el modelo/cuenta no la admite, texto libre + extracción del JSON
+    # 1) Salida estructurada nativa; 2) si ningún modelo la admite, texto libre + extracción del JSON
     try:
-        resp = client.models.generate_content(
-            model=modelo, contents=contents,
-            config=types.GenerateContentConfig(
-                system_instruction=PIRATA_SYSTEM, response_mime_type="application/json", max_output_tokens=4096,
-            ),
-        )
+        resp = _generar_gemini(contents, system_instruction=PIRATA_SYSTEM,
+                               response_mime_type="application/json", max_output_tokens=4096)
         return _json_de_texto(_texto_de(resp))
     except Exception as e:
         print(f"[pirata/gemini json-mode] {type(e).__name__}: {e}")
         if getattr(e, "code", None) in (429, 401, 403):
             raise  # cuota o credenciales: reintentar no ayuda
-        resp = client.models.generate_content(
-            model=modelo, contents=contents,
-            config=types.GenerateContentConfig(system_instruction=PIRATA_SYSTEM, max_output_tokens=4096),
-        )
+        resp = _generar_gemini(contents, system_instruction=PIRATA_SYSTEM, max_output_tokens=4096)
         return _json_de_texto(_texto_de(resp))
 
 
@@ -249,6 +257,8 @@ def chat(body: ChatIn, request: Request):
             texto = _chat_gemini(p["system"], historial)
         except Exception as e:  # la API de Gemini lanza errores propios variados
             print(f"[gemini] {type(e).__name__}: {e}")  # queda en los logs del servidor, no en el cliente
+            if getattr(e, "code", None) == 429:
+                raise HTTPException(429, "La cuota gratuita de la IA se agotó por un momento. Espera un minuto e inténtalo de nuevo.")
             raise HTTPException(502, "La IA no pudo responder en este momento. Inténtalo de nuevo en unos segundos.")
     elif os.environ.get("ANTHROPIC_API_KEY"):
         proveedor = "claude"
