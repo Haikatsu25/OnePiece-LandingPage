@@ -153,16 +153,24 @@ def _pirata_gemini(prompt: str) -> dict:
     from google.genai import types
 
     client = genai.Client()
-    resp = client.models.generate_content(
-        model=os.environ.get("GEMINI_MODEL", "gemini-3.6-flash"),
-        contents=[{"role": "user", "parts": [{"text": prompt}]}],
-        config=types.GenerateContentConfig(
-            system_instruction=PIRATA_SYSTEM,
-            response_mime_type="application/json",
-            max_output_tokens=800,
-        ),
-    )
-    return _json_de_texto(resp.text or "")
+    modelo = os.environ.get("GEMINI_MODEL", "gemini-3.6-flash")
+    contents = [{"role": "user", "parts": [{"text": prompt}]}]
+    # 1) Salida estructurada nativa; 2) si el modelo/cuenta no la admite, texto libre + extracción del JSON
+    try:
+        resp = client.models.generate_content(
+            model=modelo, contents=contents,
+            config=types.GenerateContentConfig(
+                system_instruction=PIRATA_SYSTEM, response_mime_type="application/json", max_output_tokens=800,
+            ),
+        )
+        return _json_de_texto(resp.text or "")
+    except Exception as e:
+        print(f"[pirata/gemini json-mode] {type(e).__name__}: {e}")
+        resp = client.models.generate_content(
+            model=modelo, contents=contents,
+            config=types.GenerateContentConfig(system_instruction=PIRATA_SYSTEM, max_output_tokens=800),
+        )
+        return _json_de_texto(resp.text or "")
 
 
 def _pirata_claude(prompt: str) -> dict:
