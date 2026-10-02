@@ -137,6 +137,19 @@ def _chat_gemini(system: str, historial: list[dict]) -> str:
     return resp.text or "…"
 
 
+def _texto_de(resp) -> str:
+    """Texto de una respuesta de Gemini; si viene vacía, lanza un error con el motivo (finish_reason)."""
+    texto = getattr(resp, "text", None)
+    if texto:
+        return texto
+    motivo = None
+    try:
+        motivo = getattr(resp.candidates[0], "finish_reason", None)
+    except Exception:
+        pass
+    raise ValueError(f"respuesta vacia ({motivo})")
+
+
 def _json_de_texto(texto: str) -> dict:
     """Extrae el primer objeto JSON del texto (tolera ```json ... ```)."""
     import json, re
@@ -160,17 +173,17 @@ def _pirata_gemini(prompt: str) -> dict:
         resp = client.models.generate_content(
             model=modelo, contents=contents,
             config=types.GenerateContentConfig(
-                system_instruction=PIRATA_SYSTEM, response_mime_type="application/json", max_output_tokens=800,
+                system_instruction=PIRATA_SYSTEM, response_mime_type="application/json", max_output_tokens=4096,
             ),
         )
-        return _json_de_texto(resp.text or "")
+        return _json_de_texto(_texto_de(resp))
     except Exception as e:
         print(f"[pirata/gemini json-mode] {type(e).__name__}: {e}")
         resp = client.models.generate_content(
             model=modelo, contents=contents,
-            config=types.GenerateContentConfig(system_instruction=PIRATA_SYSTEM, max_output_tokens=800),
+            config=types.GenerateContentConfig(system_instruction=PIRATA_SYSTEM, max_output_tokens=4096),
         )
-        return _json_de_texto(resp.text or "")
+        return _json_de_texto(_texto_de(resp))
 
 
 def _pirata_claude(prompt: str) -> dict:
@@ -280,7 +293,7 @@ def pirata(body: PirataIn, request: Request):
         raise
     except Exception as e:
         print(f"[pirata/{type(e).__name__}] {e}")
-        raise HTTPException(502, "La IA no pudo generar tu identidad en este momento. Inténtalo de nuevo.")
+        raise HTTPException(502, f"La IA no pudo generar tu identidad en este momento ({type(e).__name__}). Inténtalo de nuevo.")
 
     # Saneado: claves esperadas, tipos correctos y recompensa dentro de rango
     try:
