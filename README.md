@@ -15,6 +15,25 @@ Página fan interactiva de One Piece hecha con **Next.js + React** y un backend 
 - 🧭 Quiz interactivo con lluvia de confeti
 - 🤖 **Chat Nakama con IA**: habla con Luffy, Chopper o Zoro
 
+## 🎓 Actividad: APIs de Inteligencia Artificial
+
+**Consigna:** crear, a través de APIs web, una mejora a una página web usando motores como Claude, Gemini o ChatGPT, y compartir el código en plataformas de nube.
+
+**Mejoras con IA integradas en esta página** (ambas consumen la API de Google Gemini desde un backend Python/FastAPI, con la API de Claude como alternativa):
+
+| Mejora | Qué hace | Endpoint | Cómo usa la API |
+|---|---|---|---|
+| 🤖 **Chat Nakama** | Chat flotante para conversar con Luffy, Chopper o Zoro, cada uno con su personalidad (system prompt) y memoria de la conversación. | `POST /api/py/chat` | `generate_content` con `system_instruction` e historial multi-turno |
+| 🏴‍☠️ **Tu Identidad Pirata** | El usuario escribe su nombre, rasgos y sueño; la IA inventa epíteto, fruta del diablo, recompensa, rol e historia, y la página los dibuja como cartel **WANTED**. | `POST /api/py/pirata` | `generate_content` con `response_mime_type="application/json"` (salida estructurada) |
+
+Medidas incluidas: la clave vive solo en el servidor (variable de entorno), límite de 20 peticiones por IP cada 5 minutos, saneado de la respuesta de la IA y mensajes de error sin detalles internos.
+
+**Plataformas de nube usadas para compartir y entregar:**
+
+- 💻 Código: GitHub → https://github.com/Haikatsu25/OnePiece-LandingPage
+- 🌐 Despliegue (frontend + backend Python serverless): Vercel → https://one-piece-landing-page-six.vercel.app/
+- 🐍 Versión Streamlit (ramas `streamlit` y `streamlit-ia`): Streamlit Community Cloud → https://onepiece-landingpage.streamlit.app/
+
 ## 🧠 La IA
 
 El chat usa un backend en Python ([api/index.py](api/index.py)) que funciona con

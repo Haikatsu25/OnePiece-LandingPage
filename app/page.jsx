@@ -116,6 +116,7 @@ function NavBar() {
           <li><a href="#galeria">Galería</a></li>
           <li><a href="#videos">Videos</a></li>
           <li><a href="#recompensas">Recompensas</a></li>
+          <li><a href="#identidad">Identidad IA</a></li>
           <li><a href="#quiz">Quiz</a></li>
         </ul>
       </nav>
@@ -456,6 +457,87 @@ const GALERIA = [
     desc: "Con el poder de Nika, Luffy agranda su puño hasta el tamaño de la propia Onigashima para el Gomu Gomu no Bajrang Gun, el golpe que hunde a Kaido y pone fin a veinte años de tiranía en Wano. Tras esta victoria, los periódicos del mundo proclaman a Luffy nuevo Emperador del Mar.",
   },
 ];
+
+/* ================= generador de identidad pirata (API de IA) ================= */
+function IdentidadPirata() {
+  const [form, setForm] = useState({ nombre: "", rasgos: "", sueno: "" });
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState(null);
+  const [res, setRes] = useState(null);
+  const listo = form.nombre.trim() && form.rasgos.trim() && form.sueno.trim();
+  const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
+
+  const generar = async (e) => {
+    e.preventDefault();
+    if (!listo || busy) return;
+    setBusy(true); setError(null); setRes(null);
+    try {
+      const r = await fetch("/api/py/pirata", {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form),
+      });
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(data.detail || `Error ${r.status}`);
+      setRes(data);
+      fireConfetti();
+    } catch (err) {
+      setError(err instanceof TypeError
+        ? "No encuentro el barco de la IA 🌫️ — arranca el backend Python: uvicorn api.index:app --port 8000."
+        : String(err.message || err));
+    } finally { setBusy(false); }
+  };
+
+  return (
+    <section className="block" id="identidad">
+      <div className="reveal">
+        <div className="divider"><h2 className="dtitle">Tu Identidad Pirata</h2></div>
+        <span className="dsub">Generada con inteligencia artificial · API de Gemini</span>
+        <p className="intro">Cuéntale a la IA quién eres y el Gobierno Mundial redactará tu cartel de SE BUSCA. 🏴‍☠️</p>
+      </div>
+      <div className="idp-wrap">
+        <form className="idp-form reveal" onSubmit={generar}>
+          <label className="idp-label" htmlFor="idp-nombre">Tu nombre</label>
+          <input id="idp-nombre" className="idp-input" maxLength={40} placeholder="Ej. Rodrigo" value={form.nombre} onChange={set("nombre")} required />
+          <label className="idp-label" htmlFor="idp-rasgos">Tres rasgos que te describen</label>
+          <input id="idp-rasgos" className="idp-input" maxLength={200} placeholder="Ej. terco, leal, siempre tengo hambre" value={form.rasgos} onChange={set("rasgos")} required />
+          <label className="idp-label" htmlFor="idp-sueno">Tu sueño</label>
+          <input id="idp-sueno" className="idp-input" maxLength={200} placeholder="Ej. dibujar el mapa del mundo entero" value={form.sueno} onChange={set("sueno")} required />
+          <button className="btn-gold" type="submit" disabled={!listo || busy} aria-busy={busy}>
+            {busy ? "⚓ LA IA ESTÁ REDACTANDO TU CARTEL…" : "🤖 GENERAR MI IDENTIDAD CON IA"}
+          </button>
+          {error && <p className="idp-error" role="alert">⚠️ {error}</p>}
+          <p className="idp-note">Tus datos solo se usan para generar el cartel; la clave de la API vive en el servidor.</p>
+        </form>
+
+        <div className="idp-result reveal" aria-live="polite">
+          {res ? (
+            <>
+              <Tilt className="wanted idp-poster">
+                <div className="wtop">WANTED</div>
+                <div className="wface"><StrawHat width={66} uid="idp" /></div>
+                <div className="wdead">DEAD OR ALIVE</div>
+                <div className="wname">{res.nombre}</div>
+                <div className="wrole">«{res.epiteto}» · {res.rol}</div>
+                <div className="wbounty"><small>RECOMPENSA</small>฿ {Number(res.recompensa).toLocaleString("es-MX")}</div>
+                <div className="wfruit">🍈 {res.fruta}</div>
+              </Tilt>
+              <div className="panel idp-story">
+                <h3>Tu leyenda</h3>
+                <p>{res.historia}</p>
+                {res.frase && <p className="idp-quote">«{res.frase}»</p>}
+                <span className="idp-ia">Generado con {res.ia === "gemini" ? "Google Gemini" : "Claude"} · API de IA</span>
+              </div>
+            </>
+          ) : (
+            <div className="idp-placeholder">
+              <div className="idp-ph-hat"><StrawHat width={90} uid="idpph" /></div>
+              <p>{busy ? "El Gobierno Mundial está revisando tus fechorías…" : "Tu cartel de SE BUSCA aparecerá aquí."}</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
 
 /* ================= datos ================= */
 const CREW = [
@@ -873,6 +955,9 @@ export default function Page() {
           </Tilt>
         </div>
       </section>
+
+      {/* ===== IDENTIDAD PIRATA CON IA ===== */}
+      <IdentidadPirata />
 
       {/* ===== QUIZ ===== */}
       <section className="block" id="quiz">
